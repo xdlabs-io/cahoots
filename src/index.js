@@ -1,17 +1,86 @@
-// Cahoots Core & CLI Entrypoint
+import { initLedger, loadLedger } from "./core/ledger.js";
+import { startMcpServer } from "./server.js";
+import { CAHOOTS_MCP_TOOLS } from "./tools/schema.js";
+import { executeTool } from "./tools/handlers.js";
+
+export {
+  initLedger,
+  loadLedger,
+  startMcpServer,
+  CAHOOTS_MCP_TOOLS,
+  executeTool
+};
+
 export function runCli(args = []) {
   const cmd = args[0] || "help";
+
   if (cmd === "version" || cmd === "-v" || cmd === "--version") {
-    console.log("cahoots-mcp v0.0.1");
+    console.log("cahoots-mcp v0.0.3");
     return;
   }
+
+  if (cmd === "serve" || cmd === "mcp") {
+    startMcpServer();
+    return;
+  }
+
+  if (cmd === "init") {
+    const res = initLedger();
+    console.log(res.message);
+    return;
+  }
+
+  if (cmd === "status") {
+    const { exists, ledger, path } = loadLedger();
+    if (!exists) {
+      console.log(`No CAHOOTS.md found at ${path}. Run 'npx cahoots-mcp init' to create one.`);
+      return;
+    }
+    const openDelib = (ledger.deliberations || []).filter(d => d.status !== "Decided");
+    const openTasks = (ledger.tasks || []).filter(t => !t.completed);
+    console.log(`
+--- CAHOOTS STATUS ---
+File:          ${path}
+Mission:       ${ledger.mission || "None"}
+Invariants:    ${(ledger.invariants || []).length} active
+Roster:        ${(ledger.roster || []).join(", ") || "None"}
+Deliberations: ${openDelib.length} open (${(ledger.deliberations || []).length} total)
+Tasks:         ${openTasks.length} pending (${(ledger.tasks || []).length} total)
+Decisions:     ${(ledger.decisions || []).length} ADRs recorded
+----------------------
+`);
+    return;
+  }
+
+  if (cmd === "read") {
+    const { exists, ledger } = loadLedger();
+    if (!exists) {
+      console.log("No CAHOOTS.md found.");
+      return;
+    }
+    console.log(JSON.stringify(ledger, null, 2));
+    return;
+  }
+
   console.log(`
 Cahoots: Agents in cahoots, on the record.
 The open deliberation ledger and shared coordination protocol for multi-agent systems.
 
 Usage:
   npx cahoots-mcp init       Initialize CAHOOTS.md in the current repository
-  npx cahoots-mcp serve      Run the Cahoots STDIO MCP server for Claude, Cursor & Gemini
+  npx cahoots-mcp serve      Start the STDIO MCP server for Claude, Cursor & Gemini
+  npx cahoots-mcp status     Display high-level telemetry on active deliberations
+  npx cahoots-mcp read       Print the structured deliberation ledger JSON
   npx cahoots-mcp --version  Display version
+
+MCP Configuration:
+  {
+    "mcpServers": {
+      "cahoots": {
+        "command": "npx",
+        "args": ["-y", "cahoots-mcp", "serve"]
+      }
+    }
+  }
 `);
 }
