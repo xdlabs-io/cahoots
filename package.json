@@ -1,6 +1,6 @@
 {
   "name": "cahoots-mcp",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Agents in cahoots, on the record. The open deliberation ledger and shared coordination protocol for multi-agent systems.",
   "type": "module",
   "bin": {
