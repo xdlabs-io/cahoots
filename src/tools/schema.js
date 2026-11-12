@@ -85,7 +85,7 @@ export const CAHOOTS_MCP_TOOLS = [
         },
         objections: {
           type: "string",
-          description: "Specific risks, race conditions, performance bottlenecks, or security holes identified."
+          description: "Specific risks, race conditions, performance bottlenecks, or security holes identified. Required when position is 'dissent'."
         },
         counter_proposal: {
           type: "string",
@@ -98,6 +98,41 @@ export const CAHOOTS_MCP_TOOLS = [
         }
       },
       required: ["rfc_id", "agent", "position", "rationale"]
+    }
+  },
+  {
+    name: "cahoots_dissent",
+    description: "Formally register architectural dissent on an active deliberation (RFC). Requires explicit failure modes/objections and a constructive counter-proposal. Automatically updates RFC status to 'Dissent Logged' and freezes consensus until addressed or ruled on.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        rfc_id: {
+          type: "string",
+          description: "The RFC identifier being objected to (e.g. 'RFC-001')."
+        },
+        agent: {
+          type: "string",
+          description: "Agent handle logging dissent (e.g. '@auditor', '@architect')."
+        },
+        rationale: {
+          type: "string",
+          description: "Technical explanation of why the proposed approach is defective or dangerous."
+        },
+        objections: {
+          type: "string",
+          description: "Concrete failure modes, race conditions, memory leaks, security holes, or cost regressions."
+        },
+        counter_proposal: {
+          type: "string",
+          description: "Constructive alternative approach, mitigation, or amended design."
+        },
+        file_path: {
+          type: "string",
+          default: "CAHOOTS.md",
+          description: "Custom path to CAHOOTS.md."
+        }
+      },
+      required: ["rfc_id", "agent", "rationale", "objections"]
     }
   },
   {

@@ -156,6 +156,18 @@ export async function executeTool(name, args = {}) {
         };
       }
 
+      if (args.position === "dissent" && (!args.objections || !args.objections.trim())) {
+        return {
+          isError: true,
+          content: [
+            {
+              type: "text",
+              text: "When logging a dissent, 'objections' specifying concrete failure modes or architectural risks is required."
+            }
+          ]
+        };
+      }
+
       // Check if this agent already took a stance; if so, replace/update it
       const existingIdx = rfc.stances.findIndex(s => s.agent.toLowerCase() === args.agent.toLowerCase());
       const stanceRecord = {
@@ -190,6 +202,68 @@ export async function executeTool(name, args = {}) {
           {
             type: "text",
             text: `STANCE recorded for ${args.agent} on ${rfc.id} [${args.position.toUpperCase()}]. RFC status: ${rfc.status}.`
+          }
+        ]
+      };
+    }
+
+    case "cahoots_dissent": {
+      const { ledger } = getOrEnsureLedger(filePath, false);
+      const rfc = (ledger.deliberations || []).find(
+        d => d.id.toUpperCase() === args.rfc_id.toUpperCase()
+      );
+
+      if (!rfc) {
+        return {
+          isError: true,
+          content: [
+            {
+              type: "text",
+              text: `Deliberation '${args.rfc_id}' not found. Cannot log dissent.`
+            }
+          ]
+        };
+      }
+
+      if (!args.objections || !args.objections.trim()) {
+        return {
+          isError: true,
+          content: [
+            {
+              type: "text",
+              text: "Dissent requires explicit 'objections' detailing specific failure modes, risks, or regressions."
+            }
+          ]
+        };
+      }
+
+      const existingIdx = rfc.stances.findIndex(s => s.agent.toLowerCase() === args.agent.toLowerCase());
+      const dissentRecord = {
+        agent: args.agent,
+        timestamp: new Date().toISOString(),
+        position: "dissent",
+        rationale: args.rationale,
+        objections: args.objections,
+        counterProposal: args.counter_proposal || ""
+      };
+
+      if (existingIdx >= 0) {
+        rfc.stances[existingIdx] = dissentRecord;
+      } else {
+        rfc.stances.push(dissentRecord);
+      }
+
+      if (rfc.status !== "Decided") {
+        rfc.status = "Dissent Logged";
+      }
+
+      saveLedger(ledger, filePath);
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: `[DISSENT LOGGED] Explicit architectural dissent registered by ${args.agent} on ${rfc.id}. Status: Dissent Logged. Autonomous consensus is frozen until resolved or ruled on.`
           }
         ]
       };

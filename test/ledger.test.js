@@ -152,10 +152,19 @@ describe("Cahoots MCP Tool Handlers", () => {
     });
 
     // 2. Auditor dissents with concrete failure modes
-    const dissentRes = await executeTool("cahoots_stance", {
+    const invalidDissent = await executeTool("cahoots_dissent", {
       rfc_id: "RFC-001",
       agent: "@auditor",
-      position: "dissent",
+      rationale: "I just do not like it.",
+      file_path: TEST_FILE
+    });
+    assert.equal(invalidDissent.isError, true);
+    assert.ok(invalidDissent.content[0].text.includes("objections"));
+
+    // 3. Valid dissent with explicit objections
+    const dissentRes = await executeTool("cahoots_dissent", {
+      rfc_id: "RFC-001",
+      agent: "@auditor",
       rationale: "Serverless lambda instances don't share memory, causing high cache misses.",
       objections: "Cold starts invalidate memory state.",
       counter_proposal: "Use Upstash Redis HTTP API.",

@@ -177,8 +177,12 @@ export function parseLedger(content) {
           currentRfc.summary = match && match[1] ? match[1].trim() : "";
           continue;
         }
-        if (line.startsWith("- **STANCE**") || line.startsWith("- **Stance**")) {
-          // e.g. "- **STANCE** [@builder | 2026-11-12T16:04:00Z]:"
+        if (
+          line.startsWith("- **STANCE**") ||
+          line.startsWith("- **DISSENT**") ||
+          line.startsWith("- **Stance**") ||
+          line.startsWith("- **Dissent**")
+        ) {
           const match = line.match(/\[(.*?)\]/);
           let agent = "@peer";
           let timestamp = new Date().toISOString();
@@ -187,10 +191,11 @@ export function parseLedger(content) {
             agent = parts[0] || agent;
             timestamp = parts[1] || timestamp;
           }
+          const isDissentHeader = line.toUpperCase().includes("**DISSENT**");
           currentStance = {
             agent,
             timestamp,
-            position: "agree",
+            position: isDissentHeader ? "dissent" : "agree",
             rationale: "",
             objections: "",
             counterProposal: ""
@@ -414,7 +419,8 @@ export function serializeLedger(ledger) {
       if (rfc.stances && rfc.stances.length > 0) {
         parts.push(`- **Positions**:`);
         for (const st of rfc.stances) {
-          parts.push(`  - **STANCE** [${st.agent} | ${st.timestamp}]:`);
+          const stanceKind = st.position === "dissent" ? "**DISSENT**" : "**STANCE**";
+          parts.push(`  - ${stanceKind} [${st.agent} | ${st.timestamp}]:`);
           parts.push(`    - Position: ${st.position}`);
           if (st.rationale) parts.push(`    - Rationale: ${st.rationale}`);
           if (st.objections) parts.push(`    - Objections: ${st.objections}`);

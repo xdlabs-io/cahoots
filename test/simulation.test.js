@@ -174,7 +174,7 @@ describe("E2E Multi-Agent Deliberation Simulation", () => {
     assert.ok(diskContent.includes("RFC-001: Inbound Webhook Queue via SQLite Buffer"));
     assert.ok(diskContent.includes("- **Status**: Decided"));
     assert.ok(diskContent.includes("- **STANCE** [@builder"));
-    assert.ok(diskContent.includes("- **STANCE** [@auditor"));
+    assert.ok(diskContent.includes("- **DISSENT** [@auditor"));
     assert.ok(diskContent.includes("- **Escalation** [@auditor"));
     assert.ok(diskContent.includes("- **HUMAN RULING** [@bennett"));
     assert.ok(diskContent.includes("- [x] **TODO-101** [@builder"));

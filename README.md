@@ -3,7 +3,7 @@
 > The open deliberation ledger and shared coordination protocol for multi-agent systems.
 
 [![MIT License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![npm version](https://img.shields.io/badge/npm-v0.0.3-blue.svg)](https://www.npmjs.com/package/cahoots-mcp)
+[![npm version](https://img.shields.io/npm/v/cahoots-mcp.svg)](https://www.npmjs.com/package/cahoots-mcp)
 [![CI](https://github.com/xdlabs-io/cahoots/actions/workflows/ci.yml/badge.svg)](https://github.com/xdlabs-io/cahoots/actions/workflows/ci.yml)
 
 ---
@@ -22,12 +22,13 @@ Instead of conversational fluff, agents post typed **STANCES**, log explicit **D
 
 ## Core Primitives: The Cahoots Protocol
 
-Cahoots operates on 6 typed records in `CAHOOTS.md`:
+Cahoots operates on 7 typed records in `CAHOOTS.md`:
 
 | Primitive | Purpose | Example |
 | :--- | :--- | :--- |
 | `PROPOSAL` | An agent pitches an architectural change with rationale & trade-offs. | `RFC-001: Adopt SQS for async ingest` |
-| `STANCE` | A peer agent logs its position: agreement, critique, or constructive alternative. | `Gemini supports; Claude dissents on timeout risk` |
+| `STANCE` | A peer agent logs its position: agreement, critique, or constructive alternative. | `Gemini supports; Claude requests review` |
+| `DISSENT` | An agent formally objects with mandatory failure modes & counter-proposal. | `[DISSENT] Codex objects: Lambda concurrency wipes SQLite` |
 | `ESCALATION` | An agent halts debate and summons the developer with structured options. | `[ESCALATED] Ephemeral SQLite vs Redis cost` |
 | `HUMAN RULING` | The developer breaks ties and sets binding ground rules right in the file. | `HUMAN RULING: Go with Option B.` |
 | `TODO` | Accountable task handoffs with `@assignee`, prerequisites, and acceptance criteria. | `- [ ] TODO-104 [@coder-agent]` |
@@ -47,12 +48,20 @@ Set right in the ledger header (`> Policy: autonomous | strict | consensus`):
 
 ---
 
-## The 9 MCP Tools
+## The 10 MCP Tools
 
 | Tool | Description |
 | :--- | :--- |
 | `cahoots_read` | Read active roster, invariants, open RFCs, peer stances, task board, and ADRs. |
 | `cahoots_propose` | Submit an architectural proposal (creates `RFC-xxx`). |
+| `cahoots_stance` | Log an agent's typed position (`agree`, `dissent`, `alternate`) with failure modes. |
+| `cahoots_dissent` | Register explicit architectural dissent with required failure modes and counter-proposal. |
+| `cahoots_escalate` | Escalate an active RFC to the developer with a 2-option decision memo. |
+| `cahoots_ruling` | Record a binding human developer ruling, freezing debate into an ADR. |
+| `cahoots_task` | Create, update, or mark tasks completed with acceptance criteria. |
+| `cahoots_decision` | Manually record an Architecture Decision Record (ADR). |
+| `cahoots_status` | Telemetry pulse: count of open RFCs, active dissents, pending escalations, and completed tasks. |
+| `cahoots_init` | Scaffold a fresh `CAHOOTS.md` ledger in the repository. |
 | `cahoots_stance` | Log an agent's typed position (`agree`, `dissent`, `alternate`) with failure modes. |
 | `cahoots_escalate` | Escalate an active RFC to the developer with a 2-option decision memo. |
 | `cahoots_ruling` | Record a binding human developer ruling, freezing debate into an ADR. |
