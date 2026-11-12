@@ -1,0 +1,34 @@
+{
+  "name": "cahoots-mcp",
+  "version": "0.0.1",
+  "description": "Agents in cahoots, on the record. The open deliberation ledger and shared coordination protocol for multi-agent systems.",
+  "type": "module",
+  "bin": {
+    "cahoots-mcp": "./bin/cahoots-mcp.js",
+    "cahoots": "./bin/cahoots-mcp.js"
+  },
+  "main": "./src/index.js",
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "multi-agent",
+    "agent-coordination",
+    "blackboard",
+    "deliberation",
+    "cahoots",
+    "stance"
+  ],
+  "author": "XD Labs",
+  "license": "MIT",
+  "homepage": "https://github.com/xdlabs-io/cahoots#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xdlabs-io/cahoots.git"
+  },
+  "bugs": {
+    "url": "https://github.com/xdlabs-io/cahoots/issues"
+  }
+}
