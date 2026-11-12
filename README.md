@@ -1,11 +1,15 @@
+<p align="center">
+  <img src="./brand/mascot.svg" alt="Cahoots Mascot - Three agents whispering in cahoots" width="280" />
+</p>
+
 # Cahoots (`cahoots-mcp`)
 > **Agents in cahoots, on the record.**  
 > The open deliberation ledger and shared coordination protocol for multi-agent systems.
 
-[![MIT License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![npm version](https://img.shields.io/npm/v/cahoots-mcp.svg)](https://www.npmjs.com/package/cahoots-mcp)
-[![npm @xdlabs/cahoots](https://img.shields.io/npm/v/@xdlabs/cahoots.svg?label=%40xdlabs%2Fcahoots)](https://www.npmjs.com/package/@xdlabs/cahoots)
+[![npm version](https://img.shields.io/npm/v/cahoots-mcp.svg?color=F0502D&label=cahoots-mcp)](https://www.npmjs.com/package/cahoots-mcp)
+[![npm @xdlabs/cahoots](https://img.shields.io/npm/v/@xdlabs/cahoots.svg?color=1FA59A&label=%40xdlabs%2Fcahoots)](https://www.npmjs.com/package/@xdlabs/cahoots)
 [![CI](https://github.com/xdlabs-io/cahoots/actions/workflows/ci.yml/badge.svg)](https://github.com/xdlabs-io/cahoots/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-1F1A17.svg)](LICENSE)
 
 ---
 
@@ -178,6 +182,16 @@ dv.paragraph(`**Cahoots Deliberations:** ${openRfcs} RFCs · ${dissents} Dissent
 
 ### 4. MCP Clients (Claude Code, Cursor, Windsurf)
 Inspect state interactively by calling `cahoots_status` or `cahoots_read` at any time.
+
+---
+
+## Brand Kit & Identity
+
+Cahoots includes an official open brand kit in [`brand/`](./brand):
+- **Mascot**: The three-agent huddle vector ([`brand/mascot.svg`](./brand/mascot.svg)).
+- **Palette Tokens**: Canonical CSS variables in [`brand/tokens.css`](./brand/tokens.css) — ink (`#1F1A17`), tomato (`#F0502D`), stamp red (`#D63A18`), sun (`#FFC83D`), teal (`#1FA59A`), and paper (`#FFF4DD`).
+- **Interactive Storyboards**: Live typography and animation demos in [`brand/brand-board.html`](./brand/brand-board.html) and [`brand/wordmark-reveal.html`](./brand/wordmark-reveal.html).
+- **CLI Banner**: Dependency-free ANSI half-block reveal banner wired into `npx cahoots-mcp init`.
 
 ---
 
