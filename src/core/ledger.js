@@ -8,6 +8,7 @@ export const DEFAULT_CAHOOTS_FILE = "CAHOOTS.md";
  */
 export function initLedger({
   mission = "Coordinate autonomous agents with explicit deliberation and immutable consensus.",
+  policy = "autonomous",
   invariants = [
     "All unit and integration tests must pass before merging.",
     "Never commit secrets, tokens, or private credentials to git.",
@@ -32,6 +33,7 @@ export function initLedger({
 
   const initialLedger = {
     mission,
+    policy,
     invariants,
     roster,
     deliberations: [],
@@ -56,6 +58,7 @@ export function initLedger({
 export function parseLedger(content) {
   const ledger = {
     mission: "",
+    policy: "autonomous",
     invariants: [],
     roster: [],
     deliberations: [],
@@ -77,9 +80,13 @@ export function parseLedger(content) {
     const rawLine = lines[i];
     const line = rawLine.trim();
 
-    // Mission & Top-level quotes
+    // Mission, Policy & Top-level quotes
     if (rawLine.startsWith("> Mission:")) {
       ledger.mission = rawLine.replace("> Mission:", "").trim();
+      continue;
+    }
+    if (rawLine.startsWith("> Policy:")) {
+      ledger.policy = rawLine.replace("> Policy:", "").trim();
       continue;
     }
     if (rawLine.startsWith("> Invariants:")) {
@@ -217,6 +224,39 @@ export function parseLedger(content) {
             }
           }
         }
+        if (line.startsWith("- **Escalation**") || line.startsWith("- **ESCALATION**")) {
+          const match = line.match(/\[(.*?)\]/);
+          let by = "@agent";
+          let timestamp = new Date().toISOString();
+          if (match && match[1]) {
+            const parts = match[1].split("|").map(s => s.trim());
+            by = parts[0] || by;
+            timestamp = parts[1] || timestamp;
+          }
+          currentRfc.escalation = {
+            by,
+            timestamp,
+            reason: "",
+            options: [],
+            recommendation: ""
+          };
+          currentStance = null;
+          continue;
+        }
+        if (currentRfc.escalation) {
+          if (line.startsWith("- Reason:") || line.startsWith("* Reason:")) {
+            currentRfc.escalation.reason = line.split(":")[1].trim();
+            continue;
+          }
+          if (line.startsWith("- Recommendation:") || line.startsWith("* Recommendation:")) {
+            currentRfc.escalation.recommendation = line.split(":")[1].trim();
+            continue;
+          }
+          if (line.startsWith("- [") || line.startsWith("- 1.") || line.startsWith("- 2.")) {
+            currentRfc.escalation.options.push(line.slice(2).trim());
+            continue;
+          }
+        }
         if (line.startsWith("- **HUMAN RULING**") || line.startsWith("- **Ruling**:")) {
           const match = line.match(/\[(.*?)\]/);
           let by = "@human";
@@ -323,6 +363,9 @@ export function serializeLedger(ledger) {
   if (ledger.mission) {
     parts.push(`> Mission: ${ledger.mission}`);
   }
+  if (ledger.policy) {
+    parts.push(`> Policy: ${ledger.policy}`);
+  }
   if (ledger.invariants && ledger.invariants.length > 0) {
     parts.push(`> Invariants: ${ledger.invariants.join(" · ")}`);
   }
@@ -377,6 +420,18 @@ export function serializeLedger(ledger) {
           if (st.objections) parts.push(`    - Objections: ${st.objections}`);
           if (st.counterProposal) parts.push(`    - Counter-proposal: ${st.counterProposal}`);
         }
+      }
+
+      if (rfc.escalation) {
+        parts.push(`  - **Escalation** [${rfc.escalation.by} | ${rfc.escalation.timestamp}]:`);
+        if (rfc.escalation.reason) parts.push(`    - Reason: ${rfc.escalation.reason}`);
+        if (rfc.escalation.options && rfc.escalation.options.length > 0) {
+          parts.push(`    - Options:`);
+          for (const opt of rfc.escalation.options) {
+            parts.push(`      - ${opt}`);
+          }
+        }
+        if (rfc.escalation.recommendation) parts.push(`    - Recommendation: ${rfc.escalation.recommendation}`);
       }
 
       if (rfc.ruling) {

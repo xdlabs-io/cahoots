@@ -15,7 +15,7 @@ export function runCli(args = []) {
   const cmd = args[0] || "help";
 
   if (cmd === "version" || cmd === "-v" || cmd === "--version") {
-    console.log("cahoots-mcp v0.0.3");
+    console.log("cahoots-mcp v0.0.4");
     return;
   }
 
@@ -36,15 +36,18 @@ export function runCli(args = []) {
       console.log(`No CAHOOTS.md found at ${path}. Run 'npx cahoots-mcp init' to create one.`);
       return;
     }
-    const openDelib = (ledger.deliberations || []).filter(d => d.status !== "Decided");
+    const openDelib = (ledger.deliberations || []).filter(d => !d.status.toLowerCase().includes("decided"));
+    const escalated = (ledger.deliberations || []).filter(d => d.status.includes("ESCALATED") || (d.escalation && !d.status.toLowerCase().includes("decided")));
     const openTasks = (ledger.tasks || []).filter(t => !t.completed);
     console.log(`
 --- CAHOOTS STATUS ---
 File:          ${path}
 Mission:       ${ledger.mission || "None"}
+Policy:        ${ledger.policy || "autonomous"}
 Invariants:    ${(ledger.invariants || []).length} active
 Roster:        ${(ledger.roster || []).join(", ") || "None"}
 Deliberations: ${openDelib.length} open (${(ledger.deliberations || []).length} total)
+Escalations:   ${escalated.length > 0 ? `[!] ${escalated.length} AWAITING HUMAN RULING` : "0 pending"}
 Tasks:         ${openTasks.length} pending (${(ledger.tasks || []).length} total)
 Decisions:     ${(ledger.decisions || []).length} ADRs recorded
 ----------------------

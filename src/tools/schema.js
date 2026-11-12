@@ -134,6 +134,42 @@ export const CAHOOTS_MCP_TOOLS = [
     }
   },
   {
+    name: "cahoots_escalate",
+    description: "Escalate an active deliberation (RFC) to the human developer. Used when peer agents hit an unresolvable impasse, invariant conflict, high financial cost, breaking security boundary, or schema risk. Freezes autonomous changes until a human ruling is issued.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        rfc_id: {
+          type: "string",
+          description: "The RFC identifier to escalate (e.g. 'RFC-001')."
+        },
+        agent: {
+          type: "string",
+          description: "Agent handle calling the escalation (e.g. '@auditor', '@architect')."
+        },
+        reason: {
+          type: "string",
+          description: "Clear, direct technical explanation of why autonomous resolution is blocked or unsafe."
+        },
+        options_for_human: {
+          type: "array",
+          items: { type: "string" },
+          description: "Concise list of alternatives formatted for executive review (e.g. ['[A] In-memory cache: Free, loses state on restart', '[B] Redis: $10/mo, persistent state'])."
+        },
+        recommendation: {
+          type: "string",
+          description: "The escalating agent's recommended decision."
+        },
+        file_path: {
+          type: "string",
+          default: "CAHOOTS.md",
+          description: "Custom path to CAHOOTS.md."
+        }
+      },
+      required: ["rfc_id", "agent", "reason"]
+    }
+  },
+  {
     name: "cahoots_task",
     description: "Manage the Cahoots Task Board for cross-agent work distribution. Create, assign, update progress, or mark tasks completed with verifiable acceptance criteria.",
     inputSchema: {

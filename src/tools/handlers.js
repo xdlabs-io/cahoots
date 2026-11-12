@@ -252,6 +252,46 @@ export async function executeTool(name, args = {}) {
       };
     }
 
+    case "cahoots_escalate": {
+      const { ledger } = getOrEnsureLedger(filePath, false);
+      const rfc = (ledger.deliberations || []).find(
+        d => d.id.toUpperCase() === args.rfc_id.toUpperCase()
+      );
+
+      if (!rfc) {
+        return {
+          isError: true,
+          content: [
+            {
+              type: "text",
+              text: `Deliberation '${args.rfc_id}' not found. Cannot escalate.`
+            }
+          ]
+        };
+      }
+
+      const timestamp = new Date().toISOString();
+      rfc.status = "[ESCALATED: Awaiting Human Ruling]";
+      rfc.escalation = {
+        by: args.agent,
+        timestamp,
+        reason: args.reason,
+        options: args.options_for_human || [],
+        recommendation: args.recommendation || ""
+      };
+
+      saveLedger(ledger, filePath);
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: `[ESCALATED] Deliberation ${rfc.id} escalated to human by ${args.agent}. Status: [ESCALATED: Awaiting Human Ruling]. Autonomous modifications frozen until cahoots_ruling is issued.`
+          }
+        ]
+      };
+    }
+
     case "cahoots_task": {
       const { ledger } = getOrEnsureLedger(filePath, true);
       const action = (args.action || "list").toLowerCase();
@@ -414,7 +454,10 @@ export async function executeTool(name, args = {}) {
       }
 
       const openDeliberations = (ledger.deliberations || []).filter(
-        d => d.status !== "Decided"
+        d => !d.status.toLowerCase().includes("decided")
+      );
+      const escalations = (ledger.deliberations || []).filter(
+        d => d.status.includes("ESCALATED") || (d.escalation && !d.status.toLowerCase().includes("decided"))
       );
       const activeDissents = (ledger.deliberations || []).filter(d =>
         (d.stances || []).some(s => s.position === "dissent")
@@ -425,11 +468,13 @@ export async function executeTool(name, args = {}) {
       const statusCard = {
         file: resolvedPath,
         mission: ledger.mission || "None",
+        policy: ledger.policy || "autonomous",
         rosterCount: (ledger.roster || []).length,
         invariantsCount: (ledger.invariants || []).length,
         deliberations: {
           total: (ledger.deliberations || []).length,
           open: openDeliberations.length,
+          escalated: escalations.length,
           withDissent: activeDissents.length,
           openIds: openDeliberations.map(d => `${d.id} (${d.status})`)
         },

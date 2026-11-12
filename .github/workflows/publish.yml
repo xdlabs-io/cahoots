@@ -10,7 +10,24 @@ permissions:
   id-token: write
 
 jobs:
+  test:
+    name: Run Test Suite
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
+
+      - name: Run Test Suite
+        run: npm test
+
   publish:
+    name: Publish to npm (OIDC)
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
