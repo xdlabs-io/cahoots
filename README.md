@@ -4,6 +4,7 @@
 
 [![MIT License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![npm version](https://img.shields.io/npm/v/cahoots-mcp.svg)](https://www.npmjs.com/package/cahoots-mcp)
+[![npm @xdlabs/cahoots](https://img.shields.io/npm/v/@xdlabs/cahoots.svg?label=%40xdlabs%2Fcahoots)](https://www.npmjs.com/package/@xdlabs/cahoots)
 [![CI](https://github.com/xdlabs-io/cahoots/actions/workflows/ci.yml/badge.svg)](https://github.com/xdlabs-io/cahoots/actions/workflows/ci.yml)
 
 ---
@@ -61,13 +62,6 @@ Set right in the ledger header (`> Policy: autonomous | strict | consensus`):
 | `cahoots_task` | Create, update, or mark tasks completed with acceptance criteria. |
 | `cahoots_decision` | Manually record an Architecture Decision Record (ADR). |
 | `cahoots_status` | Telemetry pulse: count of open RFCs, active dissents, pending escalations, and completed tasks. |
-| `cahoots_init` | Scaffold a fresh `CAHOOTS.md` ledger in the repository. |
-| `cahoots_stance` | Log an agent's typed position (`agree`, `dissent`, `alternate`) with failure modes. |
-| `cahoots_escalate` | Escalate an active RFC to the developer with a 2-option decision memo. |
-| `cahoots_ruling` | Record a binding human developer ruling, freezing debate into an ADR. |
-| `cahoots_task` | Create, update, or mark tasks completed with acceptance criteria. |
-| `cahoots_decision` | Manually record an Architecture Decision Record (ADR). |
-| `cahoots_status` | Telemetry pulse: count of open RFCs, pending escalations, and completed tasks. |
 | `cahoots_init` | Scaffold a fresh `CAHOOTS.md` ledger in the repository. |
 
 ---
@@ -146,6 +140,44 @@ Add Cahoots to your Claude Code, Cursor, or Antigravity MCP configuration:
 ## Decision Log (ADRs)
 - **ADR-001** (2026-11-12): Upstash Redis selected for webhook ingest. Ruling by @bennett.
 ```
+
+---
+
+## Viewing & Embedding Cahoots in Dashboards
+
+Because `CAHOOTS.md` is standard Git-tracked markdown, developers and teams can surface live deliberation telemetry in any dashboard, terminal, or app:
+
+### 1. Terminal CLI
+```bash
+# View active metrics (open RFCs, dissents, escalations, pending tasks)
+npx cahoots-mcp status
+
+# Read full structured ledger
+npx cahoots-mcp read
+```
+
+### 2. Node.js / Custom Dashboards
+```javascript
+import { loadLedger } from "cahoots-mcp";
+
+const ledger = loadLedger("./CAHOOTS.md");
+console.log(`Open RFCs: ${ledger.rfcs.filter(r => r.status.includes("OPEN")).length}`);
+console.log(`Escalations: ${ledger.rfcs.filter(r => r.status.includes("ESCALATED")).length}`);
+console.log(`Pending Tasks: ${ledger.tasks.filter(t => t.status === "Pending").length}`);
+```
+
+### 3. Obsidian / DataviewJS Dashboards
+```javascript
+const fs = require('fs');
+const cahootsRaw = fs.readFileSync('C:/path/to/project/CAHOOTS.md', 'utf8');
+const openRfcs = (cahootsRaw.match(/### RFC-\d+/g) || []).length;
+const escalations = (cahootsRaw.match(/\[ESCALATED/g) || []).length;
+const dissents = (cahootsRaw.match(/Position:\s*dissent/gi) || []).length;
+dv.paragraph(`**Cahoots Deliberations:** ${openRfcs} RFCs · ${dissents} Dissents · ${escalations} Escalated`);
+```
+
+### 4. MCP Clients (Claude Code, Cursor, Windsurf)
+Inspect state interactively by calling `cahoots_status` or `cahoots_read` at any time.
 
 ---
 
