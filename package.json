@@ -4,8 +4,8 @@
   "description": "Agents in cahoots, on the record. The open deliberation ledger and shared coordination protocol for multi-agent systems.",
   "type": "module",
   "bin": {
-    "cahoots-mcp": "./bin/cahoots-mcp.js",
-    "cahoots": "./bin/cahoots-mcp.js"
+    "cahoots-mcp": "bin/cahoots-mcp.js",
+    "cahoots": "bin/cahoots-mcp.js"
   },
   "main": "./src/index.js",
   "scripts": {
