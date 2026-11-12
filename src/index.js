@@ -2,6 +2,7 @@ import { initLedger, loadLedger } from "./core/ledger.js";
 import { startMcpServer } from "./server.js";
 import { CAHOOTS_MCP_TOOLS } from "./tools/schema.js";
 import { executeTool } from "./tools/handlers.js";
+import { playBanner } from "./banner.js";
 
 export {
   initLedger,
@@ -11,7 +12,7 @@ export {
   executeTool
 };
 
-export function runCli(args = []) {
+export async function runCli(args = []) {
   const cmd = args[0] || "help";
 
   if (cmd === "version" || cmd === "-v" || cmd === "--version") {
@@ -25,6 +26,7 @@ export function runCli(args = []) {
   }
 
   if (cmd === "init") {
+    await playBanner();
     const res = initLedger();
     console.log(res.message);
     return;

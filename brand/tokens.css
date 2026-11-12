@@ -1,0 +1,17 @@
+/* Cahoots brand tokens */
+@import url("https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Chewy&family=Fredoka:wght@500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap");
+
+:root {
+  --cahoots-ink: #1F1A17;
+  --cahoots-tomato: #F0502D;
+  --cahoots-stamp-red: #D63A18;
+  --cahoots-sun: #FFC83D;
+  --cahoots-teal: #1FA59A;
+  --cahoots-paper: #FFF4DD;
+  --cahoots-card: #FFFBF0;
+  --cahoots-muted: #5A4F45;
+
+  --font-wordmark: "Bagel Fat One", "Fredoka", sans-serif;
+  --font-display: "Fredoka", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}

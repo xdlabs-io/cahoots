@@ -2,4 +2,4 @@
 
 import { runCli } from "../src/index.js";
 
-runCli(process.argv.slice(2));
+await runCli(process.argv.slice(2));

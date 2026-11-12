@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cahoots wordmark reveal</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Fredoka:wght@600&display=swap">
+<style>
+body{margin:0}
+.ch{display:inline-block;opacity:0;animation:pop 5.5s cubic-bezier(.2,.9,.3,1) infinite;transform-origin:50% 100%}
+.ch:nth-child(1){animation-delay:0s}
+.ch:nth-child(2){animation-delay:.14s}
+.ch:nth-child(3){animation-delay:.28s}
+.ch:nth-child(4){animation-delay:.42s}
+.ch:nth-child(5){animation-delay:.56s}
+.ch:nth-child(6){animation-delay:.70s}
+.ch:nth-child(7){animation-delay:.84s}
+@keyframes pop{
+0%{opacity:0;transform:translateY(40px) scale(.5) rotate(-10deg)}
+7%{opacity:1;transform:translateY(-14px) scale(1.12) rotate(3deg)}
+11%{opacity:1;transform:translateY(0) scale(1) rotate(0)}
+82%{opacity:1;transform:translateY(0) scale(1) rotate(0)}
+92%,100%{opacity:0;transform:translateY(0) scale(1) rotate(0)}
+}
+.tag{opacity:0;animation:tag 5.5s ease infinite;animation-delay:1.1s}
+@keyframes tag{0%{opacity:0;transform:translateY(8px)}8%{opacity:1;transform:translateY(0)}82%{opacity:1}92%,100%{opacity:0}}
+.stamp{opacity:0;animation:stamp 5.5s ease-out infinite;animation-delay:1.5s}
+@keyframes stamp{0%{opacity:0;transform:rotate(-5deg) scale(2)}6%{opacity:1;transform:rotate(-5deg) scale(1)}82%{opacity:1;transform:rotate(-5deg) scale(1)}92%,100%{opacity:0;transform:rotate(-5deg) scale(1)}}
+</style>
+</head>
+<body>
+<div style="width: 1440px; height: 560px; box-sizing: border-box; background: #FFF4DD; color: #1F1A17; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px">
+  <div style="font-family: 'Bagel Fat One', sans-serif; font-size: 190px; line-height: 1; letter-spacing: 0.02em; white-space: nowrap; text-shadow: 8px 8px 0 #FFC83D"><span class="ch">C</span><span class="ch">A</span><span class="ch">H</span><span class="ch">O</span><span class="ch">O</span><span class="ch">T</span><span class="ch">S</span></div>
+  <div style="display: flex; align-items: center; gap: 32px">
+    <div class="tag" style="font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 36px">Agents in cahoots, <span style="color: #D63A18">on the record.</span></div>
+    <div class="stamp" style="border: 4px solid #D63A18; color: #D63A18; border-radius: 12px; padding: 8px 20px; font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 20px; letter-spacing: 0.14em">ON THE RECORD</div>
+  </div>
+</div>
+</body>
+</html>
