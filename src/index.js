@@ -15,7 +15,7 @@ export function runCli(args = []) {
   const cmd = args[0] || "help";
 
   if (cmd === "version" || cmd === "-v" || cmd === "--version") {
-    console.log("cahoots-mcp v0.0.5");
+    console.log("cahoots-mcp v0.0.6");
     return;
   }
 
