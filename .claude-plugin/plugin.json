@@ -3,12 +3,13 @@
   "version": "0.1.0",
   "description": "Multi-agent coordination & deliberation ledger (CAHOOTS.md). Typed proposals, explicit peer dissent, human tie-breaking rulings, and immutable ADR consensus.",
   "author": {
-    "name": "XD Labs",
-    "url": "https://github.com/xdlabs-io/cahoots"
+    "name": "Bennett Moore",
+    "url": "https://www.xdlabs.io"
   },
   "homepage": "https://github.com/xdlabs-io/cahoots#readme",
   "repository": "https://github.com/xdlabs-io/cahoots",
   "license": "MIT",
+  "privacyPolicyUrl": "https://www.xdlabs.io",
   "keywords": [
     "multi-agent",
     "coordination",
