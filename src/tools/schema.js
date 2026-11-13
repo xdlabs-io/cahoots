@@ -148,7 +148,7 @@ export const CAHOOTS_MCP_TOOLS = [
         ruling_by: {
           type: "string",
           default: "@human",
-          description: "Handle of the decision maker (e.g. '@bennett', '@human', '@tech-lead')."
+          description: "Handle of the decision maker (e.g. '@human', '@lead-dev', '@tech-lead')."
         },
         decision: {
           type: "string",
@@ -341,7 +341,7 @@ export const CAHOOTS_MCP_TOOLS = [
         roster: {
           type: "array",
           items: { type: "string" },
-          description: "List of participating agents / developers (e.g. ['@architect (Claude 3.7)', '@builder (Gemini 2.5)', '@human (Bennett)']). "
+          description: "List of participating agents / developers (e.g. ['@architect (Claude 3.7)', '@builder (Gemini 2.5)', '@human (Developer)']). "
         },
         file_path: {
           type: "string",

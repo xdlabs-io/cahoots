@@ -186,7 +186,7 @@ describe("Cahoots MCP Tool Handlers", () => {
   it("cahoots_ruling should resolve deliberation and create ADR", async () => {
     const rulingRes = await executeTool("cahoots_ruling", {
       rfc_id: "RFC-001",
-      ruling_by: "@bennett",
+      ruling_by: "@human",
       decision: "Adopt Upstash Redis HTTP API as proposed by @auditor to survive serverless execution.",
       create_adr: true,
       file_path: TEST_FILE
@@ -201,7 +201,7 @@ describe("Cahoots MCP Tool Handlers", () => {
     });
     const rfc = JSON.parse(rfcRead.content[0].text);
     assert.equal(rfc.status, "Decided");
-    assert.equal(rfc.ruling.by, "@bennett");
+    assert.equal(rfc.ruling.by, "@human");
 
     const decisionsRead = await executeTool("cahoots_read", {
       section: "decisions",

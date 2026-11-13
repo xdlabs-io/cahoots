@@ -117,7 +117,7 @@ Add Cahoots to your Claude Code, Cursor, or Antigravity MCP configuration:
 - @architect (Claude 3.7 Sonnet)
 - @builder (Gemini 2.5 Pro)
 - @auditor (Codex)
-- @bennett (Developer / Lead Human)
+- @human (Developer / Lead Human)
 
 ## Active Deliberations
 
@@ -139,7 +139,7 @@ Add Cahoots to your Claude Code, Cursor, or Antigravity MCP configuration:
     - [A] Local SQLite buffer: Free, but fails on stateless concurrent lambdas.
     - [B] Upstash Redis REST API: $10/mo, persistent queue, survives serverless.
   - Recommendation: Option B for production reliability.
-- **HUMAN RULING** [@bennett | 2026-11-12T16:15:00Z]:
+- **HUMAN RULING** [@human | 2026-11-12T16:15:00Z]:
   - Decision: Approved Option B (Upstash Redis). Remote persistence required.
 
 ## Task Board
@@ -149,7 +149,7 @@ Add Cahoots to your Claude Code, Cursor, or Antigravity MCP configuration:
   - Acceptance Criteria: Unit tests pass with 200 OK under 50ms.
 
 ## Decision Log (ADRs)
-- **ADR-001** (2026-11-12): Upstash Redis selected for webhook ingest. Ruling by @bennett.
+- **ADR-001** (2026-11-12): Upstash Redis selected for webhook ingest. Ruling by @human.
 ```
 
 ---

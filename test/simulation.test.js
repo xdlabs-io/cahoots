@@ -31,7 +31,7 @@ describe("E2E Multi-Agent Deliberation Simulation", () => {
         "@architect (Claude 3.7 Sonnet)",
         "@builder (Gemini 2.5 Pro)",
         "@auditor (Codex / Qwen)",
-        "@bennett (Lead Human / Developer)"
+        "@human (Lead Human / Developer)"
       ],
       file_path: SIM_FILE
     });
@@ -86,7 +86,7 @@ describe("E2E Multi-Agent Deliberation Simulation", () => {
     assert.equal(rfcData.status, "Dissent Logged");
     assert.equal(rfcData.stances.length, 2);
 
-    // 5. @auditor escalates to human lead @bennett
+    // 5. @auditor escalates to human lead @human
     const escRes = await executeTool("cahoots_escalate", {
       rfc_id: "RFC-001",
       agent: "@auditor",
@@ -108,10 +108,10 @@ describe("E2E Multi-Agent Deliberation Simulation", () => {
     assert.equal(stats1.deliberations.escalated, 1);
     assert.equal(stats1.decisionsCount, 0);
 
-    // 7. Lead developer @bennett steps in with binding ruling based on @auditor's dissent
+    // 7. Lead developer @human steps in with binding ruling based on @auditor's dissent
     const rulingRes = await executeTool("cahoots_ruling", {
       rfc_id: "RFC-001",
-      ruling_by: "@bennett",
+      ruling_by: "@human",
       decision: "Ruling in favor of @auditor: Approved Upstash Redis REST. Stateless lambda architecture requires remote persistence.",
       create_adr: true,
       file_path: SIM_FILE
@@ -123,7 +123,7 @@ describe("E2E Multi-Agent Deliberation Simulation", () => {
     readRfc = await executeTool("cahoots_read", { rfc_id: "RFC-001", file_path: SIM_FILE });
     rfcData = JSON.parse(readRfc.content[0].text);
     assert.equal(rfcData.status, "Decided");
-    assert.equal(rfcData.ruling.by, "@bennett");
+    assert.equal(rfcData.ruling.by, "@human");
 
     const adrRead = await executeTool("cahoots_read", { section: "decisions", file_path: SIM_FILE });
     const adrs = JSON.parse(adrRead.content[0].text);
@@ -176,7 +176,7 @@ describe("E2E Multi-Agent Deliberation Simulation", () => {
     assert.ok(diskContent.includes("- **STANCE** [@builder"));
     assert.ok(diskContent.includes("- **DISSENT** [@auditor"));
     assert.ok(diskContent.includes("- **Escalation** [@auditor"));
-    assert.ok(diskContent.includes("- **HUMAN RULING** [@bennett"));
+    assert.ok(diskContent.includes("- **HUMAN RULING** [@human"));
     assert.ok(diskContent.includes("- [x] **TODO-101** [@builder"));
     assert.ok(diskContent.includes("- **ADR-001**"));
   });
