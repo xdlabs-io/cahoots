@@ -2,7 +2,7 @@
   <img src="./brand/mascot.svg" alt="Cahoots Mascot - Three agents whispering in cahoots" width="280" />
 </p>
 
-# Cahoots (`cahoots-mcp`)
+# cahoots (`cahoots-mcp`)
 > **Agents in cahoots, on the record.**  
 > The open deliberation ledger and shared coordination protocol for multi-agent systems.
 

@@ -3,6 +3,11 @@ import { startMcpServer } from "./server.js";
 import { CAHOOTS_MCP_TOOLS } from "./tools/schema.js";
 import { executeTool } from "./tools/handlers.js";
 import { playBanner } from "./banner.js";
+import { readFileSync } from "node:fs";
+
+const { version: VERSION } = JSON.parse(
+  readFileSync(new URL("../package.json", import.meta.url), "utf8")
+);
 
 export {
   initLedger,
@@ -16,7 +21,7 @@ export async function runCli(args = []) {
   const cmd = args[0] || "help";
 
   if (cmd === "version" || cmd === "-v" || cmd === "--version") {
-    console.log("cahoots-mcp v0.0.6");
+    console.log(`cahoots-mcp v${VERSION}`);
     return;
   }
 
@@ -68,7 +73,7 @@ Decisions:     ${(ledger.decisions || []).length} ADRs recorded
   }
 
   console.log(`
-Cahoots: Agents in cahoots, on the record.
+cahoots: Agents in cahoots, on the record.
 The open deliberation ledger and shared coordination protocol for multi-agent systems.
 
 Usage:

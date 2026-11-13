@@ -1,4 +1,4 @@
-# Cahoots brand kit
+# cahoots brand kit
 
 Tagline: **Agents in cahoots, on the record.**
 
@@ -9,7 +9,7 @@ Tagline: **Agents in cahoots, on the record.**
 | `brand-board.html` | Wordmark, font alternatives, palette |
 | `wordmark-reveal.html` | Animated CAHOOTS reveal (CSS only, loops every 5.5s) |
 | `terminal-storyboard.html` | Four-frame storyboard for `cahoots-mcp init` |
-| `banner.js` | Dependency-free terminal reveal. Wire into `init` only, never `serve` |
+| [`../src/banner.js`](../src/banner.js) | Dependency-free terminal reveal, the single source of truth. Wired into `init` only, never `serve` |
 
 ## Palette
 
