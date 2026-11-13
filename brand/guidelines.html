@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>cahoots brand guidelines</title>
+<link rel="icon" href="favicon.svg">
+<link rel="stylesheet" href="tokens.css">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:var(--cahoots-paper);color:var(--cahoots-ink);font:500 17px/1.55 var(--font-display)}
+main{max-width:1040px;margin:0 auto;padding:48px 24px 96px}
+h1,h2,h3{font-family:var(--font-display);font-weight:700;line-height:1.15;margin:0}
+h2{font-size:32px;margin:72px 0 16px;padding-top:24px;border-top:3px solid var(--cahoots-ink)}
+h3{font-size:20px;margin:24px 0 8px}
+p{margin:0 0 12px}
+code{font:600 .9em var(--font-mono);background:var(--cahoots-card);border:1.5px solid var(--cahoots-ink);border-radius:6px;padding:1px 6px}
+.hero{text-align:center;padding:24px 0 8px}
+.hero img{max-width:100%;height:auto}
+.grid{display:grid;gap:20px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(440px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.tile{background:var(--cahoots-card);border:3px solid var(--cahoots-ink);border-radius:var(--radius-card);padding:20px;display:flex;flex-direction:column;gap:12px;justify-content:space-between}
+.tile img{max-width:100%;height:auto;max-height:140px;object-fit:contain;align-self:center}
+.tile.dark{background:var(--cahoots-ink);color:var(--cahoots-paper)}
+.cap{font:400 13px/1.4 var(--font-mono);color:var(--cahoots-muted)}
+.dark .cap{color:#cfc5b8}
+.sw{border:3px solid var(--cahoots-ink);border-radius:18px;overflow:hidden;background:var(--cahoots-card)}
+.sw .c{height:84px}
+.sw .t{padding:10px 12px;font:400 13px/1.5 var(--font-mono)}
+.sw .t b{font:700 16px var(--font-display)}
+.do,.dont{border:3px solid var(--cahoots-ink);border-radius:18px;padding:14px 18px;background:var(--cahoots-card)}
+.do{border-color:var(--cahoots-teal)} .dont{border-color:var(--cahoots-stamp-red)}
+ul{margin:6px 0 0;padding-left:20px}
+table{border-collapse:collapse;width:100%;font-size:15px}
+td,th{border-bottom:2px solid var(--cahoots-ink);padding:8px 10px;text-align:left}
+.wm{font:400 96px/1.05 var(--font-wordmark);text-shadow:var(--wordmark-shadow);margin:0}
+.reveal{display:flex;justify-content:center;font:400 120px/1 var(--font-wordmark);text-shadow:var(--wordmark-shadow);padding:30px 0}
+.reveal span{display:inline-block;opacity:0;animation:pop 5.5s cubic-bezier(.2,.9,.3,1) infinite}
+.reveal span:nth-child(2){animation-delay:.14s}.reveal span:nth-child(3){animation-delay:.28s}.reveal span:nth-child(4){animation-delay:.42s}.reveal span:nth-child(5){animation-delay:.56s}.reveal span:nth-child(6){animation-delay:.7s}.reveal span:nth-child(7){animation-delay:.84s}
+@keyframes pop{0%{opacity:0;transform:translateY(40px) scale(.5) rotate(-10deg)}7%{opacity:1;transform:translateY(-14px) scale(1.12) rotate(3deg)}11%,82%{opacity:1;transform:none}92%,100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.reveal span{animation:none;opacity:1}}
+.term{background:var(--cahoots-ink);color:var(--cahoots-paper);border-radius:18px;padding:20px;font:400 15px/1.6 var(--font-mono);white-space:pre;overflow:auto}
+</style>
+</head>
+<body>
+<main>
+<div class="hero">
+  <img src="logo/lockup-stacked.svg" alt="cahoots, agents in cahoots, on the record." width="560">
+</div>
+<p style="text-align:center">Brand guidelines. The name is always lowercase: <b>cahoots</b>.</p>
+
+<h2>1. Logo</h2>
+<div class="grid g2">
+  <div class="tile"><img src="logo/wordmark.svg" alt="wordmark"><div><b>wordmark</b><div class="cap">default · logo/wordmark.svg</div></div></div>
+  <div class="tile"><img src="logo/wordmark-color.svg" alt="multicolor wordmark"><div><b>wordmark, color</b><div class="cap">playful contexts · wordmark-color.svg</div></div></div>
+  <div class="tile dark"><img src="logo/wordmark-reverse.svg" alt="reversed wordmark"><div><b>reverse</b><div class="cap">on ink · wordmark-reverse.svg</div></div></div>
+  <div class="tile"><img src="logo/lockup-horizontal.svg" alt="horizontal lockup"><div><b>horizontal lockup</b><div class="cap">headers, signatures · lockup-horizontal.svg</div></div></div>
+</div>
+<div class="grid g3" style="margin-top:20px">
+  <div class="tile"><img src="logo/icon-app.svg" alt="app icon" width="120"><div><b>app icon</b><div class="cap">favicon.svg · favicon.ico</div></div></div>
+  <div class="tile"><img src="logo/icon-mascot.svg" alt="mascot icon" width="120"><div><b>mascot icon</b><div class="cap">avatar, stickers</div></div></div>
+  <div class="tile"><img src="logo/stamp-on-the-record.svg" alt="stamp"><div><b>stamp</b><div class="cap">marks final decisions</div></div></div>
+</div>
+<h3>Clear space and size</h3>
+<p>Keep the height of the letter "o" free on every side. Minimum wordmark width: 90px on screen, 25mm in print. Mascot icon: 24px. App icon: 16px (use <code>favicon.ico</code>).</p>
+<div class="grid g2">
+  <div class="do"><b>Do</b><ul><li>Use lowercase "cahoots" everywhere in prose.</li><li>Use the sun shadow on light backgrounds.</li><li>Use a mono file for one-color print.</li></ul></div>
+  <div class="dont"><b>Don't</b><ul><li>Write "Cahoots" or "CAHOOTS" in the wordmark.</li><li>Stretch, rotate, outline or add effects.</li><li>Set the sun-colored wordmark on paper (1.42:1).</li><li>Swap the font or redraw the mascot.</li></ul></div>
+</div>
+
+<h2>2. Color</h2>
+<div class="grid g3">
+  <div class="sw"><div class="c" style="background:#1F1A17"></div><div class="t"><b>ink</b><br>#1F1A17<br>15.79 on paper</div></div>
+  <div class="sw"><div class="c" style="background:#F0502D"></div><div class="t"><b>tomato</b><br>#F0502D<br>3.27 on paper · large only</div></div>
+  <div class="sw"><div class="c" style="background:#D63A18"></div><div class="t"><b>stamp red</b><br>#D63A18<br>4.30 on paper · large or bold</div></div>
+  <div class="sw"><div class="c" style="background:#FFC83D"></div><div class="t"><b>sun</b><br>#FFC83D<br>1.42 on paper · fills and shadows</div></div>
+  <div class="sw"><div class="c" style="background:#1FA59A"></div><div class="t"><b>teal</b><br>#1FA59A<br>2.79 on paper · graphics</div></div>
+  <div class="sw"><div class="c" style="background:#FFF4DD"></div><div class="t"><b>paper</b><br>#FFF4DD<br>15.79 on ink</div></div>
+</div>
+<p style="margin-top:16px">Body text: ink or muted (#5A4F45, 7.29) on paper. Proportion: roughly 60% paper, 25% ink, 15% accents, at most three accents per surface.</p>
+
+<h2>3. Typography</h2>
+<p class="wm">cahoots</p>
+<table>
+  <tr><th>Role</th><th>Font</th><th>Notes</th></tr>
+  <tr><td>Wordmark, display</td><td>Bagel Fat One</td><td>lowercase, shadow 0.045em</td></tr>
+  <tr><td>Headings, UI, tagline</td><td>Fredoka 600-700</td><td>sentence case</td></tr>
+  <tr><td>Body</td><td>Fredoka 500</td><td>system sans for dense docs</td></tr>
+  <tr><td>Code, terminal, ledger</td><td>JetBrains Mono</td><td>400 and 600</td></tr>
+</table>
+
+<h2>4. Voice</h2>
+<p>Playful on the surface, strict underneath: board game night with a notary. Plain words, short sentences, at most one joke. Say what was recorded, by whom and when. Never hide dissent.</p>
+<div class="grid g2">
+  <div class="do"><b>Sounds like</b><ul><li>agent 2 objects. noted.</li><li>you're in cahoots.</li><li>dissent is welcome here.</li></ul></div>
+  <div class="dont"><b>Avoid</b><ul><li>"revolutionary", "seamless", "supercharge"</li><li>exclamation chains, emoji walls</li></ul></div>
+</div>
+
+<h2>5. Motion</h2>
+<div class="reveal" aria-label="cahoots"><span>c</span><span>a</span><span>h</span><span>o</span><span>o</span><span>t</span><span>s</span></div>
+<p>Letters pop in left to right with a 140ms stagger and a small overshoot, then the tagline fades in and the stamp lands. Loop 5.5s on marketing pages; play once in product. Honor <code>prefers-reduced-motion</code>.</p>
+
+<h2>6. Terminal</h2>
+<div class="term">$ npx cahoots-mcp init
+  (centered half-block pixel wordmark, tomato / sun / teal, darker shadows)
+  Agents in cahoots, on the record.
+  ┌─ ON THE RECORD ─┐</div>
+<p style="margin-top:12px">Source: <code>src/banner.js</code>. stderr only. Skipped in <code>serve</code>, CI, <code>NO_COLOR</code>, <code>TERM=dumb</code>, and when not a TTY. Set <code>CAHOOTS_NO_ANIMATION</code> to force-skip.</p>
+
+<h2>7. Downloads</h2>
+<table>
+  <tr><td><code>logo/*.svg</code></td><td>outlined logos, icons, stamp, social card</td></tr>
+  <tr><td><code>png/</code></td><td>wordmarks and lockups at 2000px, icon sizes 16-1024, avatar, OG card 1200x630, stamp</td></tr>
+  <tr><td><code>favicon.ico</code>, <code>favicon.svg</code></td><td>16, 32, 48 px and vector</td></tr>
+  <tr><td><code>tokens.css</code>, <code>tokens.json</code></td><td>colors, fonts, motion, radii</td></tr>
+</table>
+</main>
+</body>
+</html>

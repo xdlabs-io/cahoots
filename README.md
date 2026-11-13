@@ -78,6 +78,10 @@ Set right in the ledger header (`> Policy: autonomous | strict | consensus`):
 npx cahoots-mcp init
 ```
 
+<p align="center">
+  <img src="./brand/png/cli-init.gif" alt="npx cahoots-mcp init terminal reveal" width="720" />
+</p>
+
 ### 2. Connect to Your AI Coding Agents (MCP)
 
 Add Cahoots to your Claude Code, Cursor, or Antigravity MCP configuration:

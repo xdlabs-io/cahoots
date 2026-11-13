@@ -1,5 +1,5 @@
-/* Cahoots brand tokens */
-@import url("https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Chewy&family=Fredoka:wght@500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap");
+/* cahoots brand tokens */
+@import url("https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Fredoka:wght@500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap");
 
 :root {
   --cahoots-ink: #1F1A17;
@@ -14,4 +14,10 @@
   --font-wordmark: "Bagel Fat One", "Fredoka", sans-serif;
   --font-display: "Fredoka", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --radius-tile: 18px;
+  --radius-card: 24px;
+  --wordmark-shadow: 0.045em 0.045em 0 var(--cahoots-sun);
 }
+
+/* usage: .cahoots-wordmark { font: 400 4rem var(--font-wordmark); text-shadow: var(--wordmark-shadow); } */

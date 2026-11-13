@@ -2,14 +2,16 @@
 
 Tagline: **Agents in cahoots, on the record.**
 
-| File | What it is |
+| Path | What it is |
 | --- | --- |
-| `tokens.css` | Colors and font variables |
-| `mascot.svg` | The three-agent huddle with the "psst…" bubble |
-| `brand-board.html` | Wordmark, font alternatives, palette |
-| `wordmark-reveal.html` | Animated CAHOOTS reveal (CSS only, loops every 5.5s) |
-| `terminal-storyboard.html` | Four-frame storyboard for `cahoots-mcp init` |
-| [`../src/banner.js`](../src/banner.js) | Dependency-free terminal reveal, the single source of truth. Wired into `init` only, never `serve` |
+| [`GUIDELINES.md`](GUIDELINES.md), [`guidelines.html`](guidelines.html) | Full brand guidelines: logo rules, color and contrast, type, voice, motion |
+| `logo/` | Outlined SVGs: wordmarks (default, color, reverse, mono), lockups, icons, stamp, social card |
+| `png/` | Raster exports: wordmarks and lockups at 2000px, icon sizes 16-1024, avatar, OG card |
+| `favicon.ico`, `logo/favicon.svg` | Favicons |
+| `tokens.css`, `tokens.json` | Colors, fonts, motion, radii |
+| `mascot.svg` | The three-agent huddle with the "psst..." bubble |
+| `brand-board.html`, `wordmark-reveal.html`, `terminal-storyboard.html` | Visual studies, including the animated reveal |
+| [`../src/banner.js`](../src/banner.js) | Terminal reveal, the single source of truth. Wired into `init` only, never `serve` |
 
 ## Palette
 
