@@ -2,6 +2,8 @@ import {
   initLedger,
   loadLedger,
   saveLedger,
+  computeLedgerDiff,
+  computeLedgerHash,
   DEFAULT_CAHOOTS_FILE
 } from "../core/ledger.js";
 
@@ -566,6 +568,36 @@ export async function executeTool(name, args = {}) {
           {
             type: "text",
             text: JSON.stringify(statusCard, null, 2)
+          }
+        ]
+      };
+    }
+
+    case "cahoots_diff": {
+      const { exists, ledger, path: resolvedPath } = loadLedger(filePath);
+      if (!exists) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify({ changed: false, error: `No CAHOOTS.md found at ${resolvedPath}` }, null, 2)
+            }
+          ]
+        };
+      }
+
+      const diff = computeLedgerDiff(ledger, {
+        since_rfc: args.since_rfc,
+        since_time: args.since_time,
+        state_hash: args.state_hash,
+        compact: args.compact !== false
+      });
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(diff, null, 2)
           }
         ]
       };

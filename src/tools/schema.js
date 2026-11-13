@@ -293,6 +293,37 @@ export const CAHOOTS_MCP_TOOLS = [
     }
   },
   {
+    name: "cahoots_diff",
+    description: "Token-optimized Delta query (NCM). Returns only new RFCs, new peer stances, task status updates, and recent ADRs since a specified reference point (RFC ID, timestamp, or state hash). Prevents burning tokens on redundant historical ledger context.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        since_rfc: {
+          type: "string",
+          description: "Fetch RFCs created after this RFC ID (e.g. 'RFC-001')."
+        },
+        since_time: {
+          type: "string",
+          description: "Fetch changes logged after this ISO timestamp (e.g. '2026-11-12T19:00:00Z')."
+        },
+        state_hash: {
+          type: "string",
+          description: "Previous known state hash. If unchanged, returns { changed: false } (0-token delta)."
+        },
+        compact: {
+          type: "boolean",
+          default: true,
+          description: "Return token-minimized representation stripped of verbose whitespace and quotes."
+        },
+        file_path: {
+          type: "string",
+          default: "CAHOOTS.md",
+          description: "Custom path to CAHOOTS.md."
+        }
+      }
+    }
+  },
+  {
     name: "cahoots_init",
     description: "Scaffold a new CAHOOTS.md ledger file in the current directory with mission, invariants, and initial agent roster.",
     inputSchema: {

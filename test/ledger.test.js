@@ -262,4 +262,45 @@ describe("Cahoots MCP Tool Handlers", () => {
     assert.equal(status.tasks.pending, 0);
     assert.equal(status.decisionsCount, 1);
   });
+
+  it("cahoots_diff should return token-minimized deltas and handle hash gating", async () => {
+    // 1. Initial diff should report changed=true and return state_hash
+    const diff1Res = await executeTool("cahoots_diff", {
+      file_path: TEST_FILE,
+      compact: true
+    });
+    const diff1 = JSON.parse(diff1Res.content[0].text);
+    assert.equal(diff1.changed, true);
+    assert.ok(diff1.state_hash);
+    assert.equal(diff1.policy, "autonomous");
+
+    // 2. Querying with identical state_hash should return changed=false (0-token delta)
+    const diff2Res = await executeTool("cahoots_diff", {
+      file_path: TEST_FILE,
+      state_hash: diff1.state_hash
+    });
+    const diff2 = JSON.parse(diff2Res.content[0].text);
+    assert.equal(diff2.changed, false);
+    assert.equal(diff2.state_hash, diff1.state_hash);
+    assert.ok(diff2.message.includes("unchanged"));
+
+    // 3. Propose a new RFC and verify diff detects the change
+    await executeTool("cahoots_propose", {
+      title: "RFC-002: Delta Sync Streaming",
+      author: "@architect",
+      summary: "Stream deltas via SSE",
+      file_path: TEST_FILE
+    });
+
+    const diff3Res = await executeTool("cahoots_diff", {
+      file_path: TEST_FILE,
+      state_hash: diff1.state_hash, // Old hash
+      since_rfc: "RFC-001"
+    });
+    const diff3 = JSON.parse(diff3Res.content[0].text);
+    assert.equal(diff3.changed, true);
+    assert.notEqual(diff3.state_hash, diff1.state_hash);
+    assert.equal(diff3.active_rfcs.length, 1);
+    assert.equal(diff3.active_rfcs[0].id, "RFC-002");
+  });
 });

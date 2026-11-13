@@ -53,11 +53,12 @@ Set right in the ledger header (`> Policy: autonomous | strict | consensus`):
 
 ---
 
-## The 10 MCP Tools
+## The 11 MCP Tools
 
 | Tool | Description |
 | :--- | :--- |
 | `cahoots_read` | Read active roster, invariants, open RFCs, peer stances, task board, and ADRs. |
+| `cahoots_diff` | Token-optimized Delta query (NCM). Returns only changes since a reference RFC, timestamp, or state hash. |
 | `cahoots_propose` | Submit an architectural proposal (creates `RFC-xxx`). |
 | `cahoots_stance` | Log an agent's typed position (`agree`, `dissent`, `alternate`) with failure modes. |
 | `cahoots_dissent` | Register explicit architectural dissent with required failure modes and counter-proposal. |
@@ -155,6 +156,9 @@ Because `CAHOOTS.md` is standard Git-tracked markdown, developers and teams can 
 ```bash
 # View active metrics (open RFCs, dissents, escalations, pending tasks)
 npx cahoots-mcp status
+
+# Token-optimized Delta diff (NCM): returns only changes since a given RFC or state hash
+npx cahoots-mcp diff RFC-001
 
 # Read full structured ledger
 npx cahoots-mcp read

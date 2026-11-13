@@ -1,4 +1,9 @@
-import { initLedger, loadLedger } from "./core/ledger.js";
+import {
+  initLedger,
+  loadLedger,
+  computeLedgerDiff,
+  computeLedgerHash
+} from "./core/ledger.js";
 import { startMcpServer } from "./server.js";
 import { CAHOOTS_MCP_TOOLS } from "./tools/schema.js";
 import { executeTool } from "./tools/handlers.js";
@@ -12,6 +17,8 @@ const { version: VERSION } = JSON.parse(
 export {
   initLedger,
   loadLedger,
+  computeLedgerDiff,
+  computeLedgerHash,
   startMcpServer,
   CAHOOTS_MCP_TOOLS,
   executeTool
@@ -72,6 +79,18 @@ Decisions:     ${(ledger.decisions || []).length} ADRs recorded
     return;
   }
 
+  if (cmd === "diff") {
+    const { exists, ledger } = loadLedger();
+    if (!exists) {
+      console.log("No CAHOOTS.md found.");
+      return;
+    }
+    const sinceRfc = args[1] || null;
+    const diff = computeLedgerDiff(ledger, { since_rfc: sinceRfc, compact: true });
+    console.log(JSON.stringify(diff, null, 2));
+    return;
+  }
+
   console.log(`
 cahoots: Agents in cahoots, on the record.
 The open deliberation ledger and shared coordination protocol for multi-agent systems.
@@ -80,6 +99,7 @@ Usage:
   npx cahoots-mcp init       Initialize CAHOOTS.md in the current repository
   npx cahoots-mcp serve      Start the STDIO MCP server for Claude, Cursor & Gemini
   npx cahoots-mcp status     Display high-level telemetry on active deliberations
+  npx cahoots-mcp diff [rfc] Token-optimized delta diff (NCM) since a given RFC or hash
   npx cahoots-mcp read       Print the structured deliberation ledger JSON
   npx cahoots-mcp --version  Display version
 

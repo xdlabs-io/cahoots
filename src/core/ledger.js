@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import crypto from "node:crypto";
 
 export const DEFAULT_CAHOOTS_FILE = "CAHOOTS.md";
 
@@ -510,5 +511,109 @@ export function saveLedger(ledger, filePath = DEFAULT_CAHOOTS_FILE) {
   return {
     saved: true,
     path: targetPath
+  };
+}
+
+/**
+ * Computes a deterministic short SHA-256 fingerprint of the active ledger state.
+ * Agents can check this fingerprint to detect state changes with zero token waste.
+ */
+export function computeLedgerHash(ledger) {
+  if (!ledger) return "";
+  const payload = JSON.stringify({
+    rfcs: (ledger.deliberations || []).map(d => ({
+      id: d.id,
+      status: d.status,
+      stances: (d.stances || []).map(s => `${s.agent}:${s.position}:${s.timestamp}`),
+      ruling: d.ruling ? d.ruling.decision : null
+    })),
+    tasks: (ledger.tasks || []).map(t => `${t.id}:${t.status}:${t.completed}`),
+    decisions: (ledger.decisions || []).map(d => `${d.id}:${d.summary}`)
+  });
+  return crypto.createHash("sha256").update(payload).digest("hex").slice(0, 16);
+}
+
+/**
+ * Computes a token-optimized Delta diff of the ledger (NCM / Delta MCP).
+ * Returns only entities modified or added since a reference RFC ID, timestamp, or state hash.
+ */
+export function computeLedgerDiff(ledger, { since_rfc, since_time, state_hash, compact = true } = {}) {
+  const currentHash = computeLedgerHash(ledger);
+
+  if (state_hash && state_hash === currentHash) {
+    return {
+      changed: false,
+      state_hash: currentHash,
+      message: "Ledger unchanged since reference hash."
+    };
+  }
+
+  const parseRfcNum = (id) => {
+    const m = (id || "").match(/RFC-(\d+)/i);
+    return m ? parseInt(m[1], 10) : 0;
+  };
+
+  const minRfcNum = since_rfc ? parseRfcNum(since_rfc) : 0;
+  const minTime = since_time ? new Date(since_time).getTime() : 0;
+
+  // Filter deliberations
+  const newOrUpdatedRfcs = (ledger.deliberations || []).filter(d => {
+    const rfcNum = parseRfcNum(d.id);
+    if (minRfcNum && rfcNum > minRfcNum) return true;
+    if (minTime) {
+      const createdTime = d.created ? new Date(d.created).getTime() : 0;
+      if (createdTime >= minTime) return true;
+      const latestStanceTime = (d.stances || []).reduce((max, s) => {
+        const t = s.timestamp ? new Date(s.timestamp).getTime() : 0;
+        return t > max ? t : max;
+      }, 0);
+      if (latestStanceTime >= minTime) return true;
+    }
+    // If no filter given, return active/deliberating RFCs
+    if (!since_rfc && !since_time) {
+      return d.status !== "Decided" && d.status !== "Consensus";
+    }
+    return false;
+  });
+
+  // Filter pending / high-priority tasks
+  const pendingTasks = (ledger.tasks || []).filter(t => !t.completed || t.status !== "Completed");
+
+  // Recent decisions
+  const recentDecisions = (ledger.decisions || []).slice(-3);
+
+  if (compact) {
+    return {
+      changed: true,
+      state_hash: currentHash,
+      policy: ledger.policy || "autonomous",
+      active_rfcs: newOrUpdatedRfcs.map(r => ({
+        id: r.id,
+        title: r.title,
+        status: r.status,
+        author: r.author,
+        stances: (r.stances || []).map(s => ({
+          agent: s.agent,
+          position: s.position,
+          objections: s.objections || undefined
+        }))
+      })),
+      pending_tasks: pendingTasks.map(t => ({
+        id: t.id,
+        assignee: t.assignee,
+        priority: t.priority,
+        task: t.title
+      })),
+      recent_decisions: recentDecisions.map(d => `${d.id}: ${d.summary}`)
+    };
+  }
+
+  return {
+    changed: true,
+    state_hash: currentHash,
+    policy: ledger.policy || "autonomous",
+    deliberations: newOrUpdatedRfcs,
+    tasks: pendingTasks,
+    decisions: recentDecisions
   };
 }
