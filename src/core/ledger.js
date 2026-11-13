@@ -5,6 +5,22 @@ import crypto from "node:crypto";
 export const DEFAULT_CAHOOTS_FILE = "CAHOOTS.md";
 
 /**
+ * Resolves the ledger path using filePath, CAHOOTS_PATH, CAHOOTS_DIR, or cwd fallback.
+ */
+export function getLedgerPath(filePath = DEFAULT_CAHOOTS_FILE) {
+  if (filePath && filePath !== DEFAULT_CAHOOTS_FILE) {
+    return path.resolve(process.cwd(), filePath);
+  }
+  if (process.env.CAHOOTS_PATH) {
+    return path.resolve(process.env.CAHOOTS_PATH);
+  }
+  if (process.env.CAHOOTS_DIR) {
+    return path.resolve(process.env.CAHOOTS_DIR, DEFAULT_CAHOOTS_FILE);
+  }
+  return path.resolve(process.cwd(), filePath || DEFAULT_CAHOOTS_FILE);
+}
+
+/**
  * Initializes a new CAHOOTS.md ledger file.
  */
 export function initLedger({
@@ -23,7 +39,7 @@ export function initLedger({
   ],
   filePath = DEFAULT_CAHOOTS_FILE
 } = {}) {
-  const targetPath = path.resolve(process.cwd(), filePath);
+  const targetPath = getLedgerPath(filePath);
   if (fs.existsSync(targetPath)) {
     return {
       created: false,
@@ -485,7 +501,7 @@ export function serializeLedger(ledger) {
  * Reads CAHOOTS.md from disk and returns parsed ledger.
  */
 export function loadLedger(filePath = DEFAULT_CAHOOTS_FILE) {
-  const targetPath = path.resolve(process.cwd(), filePath);
+  const targetPath = getLedgerPath(filePath);
   if (!fs.existsSync(targetPath)) {
     return {
       exists: false,
@@ -505,7 +521,7 @@ export function loadLedger(filePath = DEFAULT_CAHOOTS_FILE) {
  * Saves a ledger object back to disk atomically.
  */
 export function saveLedger(ledger, filePath = DEFAULT_CAHOOTS_FILE) {
-  const targetPath = path.resolve(process.cwd(), filePath);
+  const targetPath = getLedgerPath(filePath);
   const markdown = serializeLedger(ledger);
   fs.writeFileSync(targetPath, markdown, "utf8");
   return {
