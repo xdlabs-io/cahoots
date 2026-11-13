@@ -25,3 +25,7 @@ Wordmark: Bagel Fat One (alternatives: Chewy, Fredoka). Headings: Fredoka. Code 
 
 - Output goes to stderr only. Writing to stdout in `serve` corrupts the JSON-RPC stdio stream.
 - Animates only on a TTY. Skipped in CI, with `NO_COLOR`, `TERM=dumb`, or `CAHOOTS_NO_ANIMATION`.
+
+## License
+
+The code is MIT. The name, wordmark and mascot are not covered by that license; see [`LICENSE.md`](LICENSE.md).
