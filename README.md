@@ -1,16 +1,7 @@
-<p align="center">
-  <a href="https://xdlabs.io/work/cahoots/">
-    <img src="./brand/png/og-card-1200x630.png" alt="cahoots — Agents in cahoots, on the record." width="720" />
-  </a>
-</p>
-
-# cahoots (`cahoots-mcp`)
+# cahoots
 > **Agents in cahoots, on the record.**  
-> The open deliberation ledger and shared coordination protocol for multi-agent systems.
+> The open deliberation ledger and shared coordination protocol for multi-agent systems and developers.
 
-[![npm version](https://img.shields.io/npm/v/cahoots-mcp.svg?color=F0502D&label=cahoots-mcp)](https://www.npmjs.com/package/cahoots-mcp)
-[![npm @xdlabs/cahoots](https://img.shields.io/npm/v/@xdlabs/cahoots.svg?color=1FA59A&label=%40xdlabs%2Fcahoots)](https://www.npmjs.com/package/@xdlabs/cahoots)
-[![CI](https://github.com/xdlabs-io/cahoots/actions/workflows/ci.yml/badge.svg)](https://github.com/xdlabs-io/cahoots/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-1F1A17.svg)](LICENSE)
 
 ---
@@ -23,7 +14,7 @@ When multiple autonomous agents (Claude Code, OpenAI Codex, Google Gemini, Curso
 
 **Cahoots** fixes this by giving agents a structured, append-only markdown ledger: `CAHOOTS.md`.
 
-Instead of conversational fluff, agents post typed **STANCES**, log explicit **DISSENT**, escalate deadlocks to the developer with **ESCALATION**, assign accountable **TODOS**, and await **HUMAN RULINGS** when consensus cannot be reached autonomously.
+Instead of conversational fluff, agents post typed **STANCES**, log explicit **DISSENT**, escalate deadlocks to the developer with **ESCALATION**, assign accountable **TASKS**, and await **HUMAN RULINGS** when consensus cannot be reached autonomously.
 
 ---
 
@@ -38,7 +29,7 @@ Cahoots operates on 7 typed records in `CAHOOTS.md`:
 | `DISSENT` | An agent formally objects with mandatory failure modes & counter-proposal. | `[DISSENT] Codex objects: Lambda concurrency wipes SQLite` |
 | `ESCALATION` | An agent halts debate and summons the developer with structured options. | `[ESCALATED] Ephemeral SQLite vs Redis cost` |
 | `HUMAN RULING` | The developer breaks ties and sets binding ground rules right in the file. | `HUMAN RULING: Go with Option B.` |
-| `TODO` | Accountable task handoffs with `@assignee`, prerequisites, and acceptance criteria. | `- [ ] TODO-104 [@coder-agent]` |
+| `TASK` | Accountable task handoffs with `@assignee`, prerequisites, and acceptance criteria. | `- [ ] TASK-104 [@coder-agent]` |
 | `DECISION` | Frozen Architecture Decision Record (ADR). Immutable consensus. | `ADR-001: Upstash Redis selected` |
 
 ---
@@ -55,56 +46,21 @@ Set right in the ledger header (`> Policy: autonomous | strict | consensus`):
 
 ---
 
-## The 11 MCP Tools
+## Slash Commands in Claude Code
 
-| Tool | Description |
+When installed as a Claude plugin, Cahoots provides built-in commands:
+
+| Command | Description |
 | :--- | :--- |
-| `cahoots_read` | Read active roster, invariants, open RFCs, peer stances, task board, and ADRs. |
-| `cahoots_diff` | Token-optimized Delta query (NCM). Returns only changes since a reference RFC, timestamp, or state hash. |
-| `cahoots_propose` | Submit an architectural proposal (creates `RFC-xxx`). |
-| `cahoots_stance` | Log an agent's typed position (`agree`, `dissent`, `alternate`) with failure modes. |
-| `cahoots_dissent` | Register explicit architectural dissent with required failure modes and counter-proposal. |
-| `cahoots_escalate` | Escalate an active RFC to the developer with a 2-option decision memo. |
-| `cahoots_ruling` | Record a binding human developer ruling, freezing debate into an ADR. |
-| `cahoots_task` | Create, update, or mark tasks completed with acceptance criteria. |
-| `cahoots_decision` | Manually record an Architecture Decision Record (ADR). |
-| `cahoots_status` | Telemetry pulse: count of open RFCs, active dissents, pending escalations, and completed tasks. |
-| `cahoots_init` | Scaffold a fresh `CAHOOTS.md` ledger in the repository. |
-
----
-
-## Quickstart
-
-### 1. Initialize `CAHOOTS.md` in Your Project
-```bash
-npx cahoots-mcp init
-```
-
-<p align="center">
-  <img src="./brand/png/cli-init.gif" alt="npx cahoots-mcp init terminal reveal" width="720" />
-</p>
-
-### 2. Connect to Your AI Coding Agents (MCP)
-
-Add Cahoots to your Claude Code, Cursor, or Antigravity MCP configuration:
-
-```json
-{
-  "mcpServers": {
-    "cahoots": {
-      "command": "npx",
-      "args": ["-y", "cahoots-mcp", "serve"]
-    }
-  }
-}
-```
+| `/cahoots-status` | Display high-level telemetry, active RFCs, unaddressed dissents, and task handoffs. |
+| `/cahoots-propose <title>` | Scaffold a structured architectural RFC in `CAHOOTS.md`. |
 
 ---
 
 ## The `CAHOOTS.md` Format
 
 ```markdown
-# CAHOOTS LEDGER
+# CAHOOTS Deliberation Ledger
 > Mission: Scale Postbuild launch distribution pipeline.
 > Policy: autonomous
 > Invariants: All tests must pass (100% green). · Keep secrets out of repo.
@@ -143,7 +99,7 @@ Add Cahoots to your Claude Code, Cursor, or Antigravity MCP configuration:
   - Decision: Approved Option B (Upstash Redis). Remote persistence required.
 
 ## Task Board
-- [ ] **TODO-101** [@builder | Priority: High | Status: Pending]
+- [ ] **TASK-101** [@builder | Priority: High | Status: Pending]
   - Task: Implement Upstash Redis webhook receiver in `api/inbound.js`.
   - Prerequisites: ADR-001
   - Acceptance Criteria: Unit tests pass with 200 OK under 50ms.
@@ -154,57 +110,6 @@ Add Cahoots to your Claude Code, Cursor, or Antigravity MCP configuration:
 
 ---
 
-## Viewing & Embedding Cahoots in Dashboards
-
-Because `CAHOOTS.md` is standard Git-tracked markdown, developers and teams can surface live deliberation telemetry in any dashboard, terminal, or app:
-
-### 1. Terminal CLI
-```bash
-# View active metrics (open RFCs, dissents, escalations, pending tasks)
-npx cahoots-mcp status
-
-# Token-optimized Delta diff (NCM): returns only changes since a given RFC or state hash
-npx cahoots-mcp diff RFC-001
-
-# Read full structured ledger
-npx cahoots-mcp read
-```
-
-### 2. Node.js / Custom Dashboards
-```javascript
-import { loadLedger } from "cahoots-mcp";
-
-const ledger = loadLedger("./CAHOOTS.md");
-console.log(`Open RFCs: ${ledger.rfcs.filter(r => r.status.includes("OPEN")).length}`);
-console.log(`Escalations: ${ledger.rfcs.filter(r => r.status.includes("ESCALATED")).length}`);
-console.log(`Pending Tasks: ${ledger.tasks.filter(t => t.status === "Pending").length}`);
-```
-
-### 3. Obsidian / DataviewJS Dashboards
-```javascript
-const fs = require('fs');
-const cahootsRaw = fs.readFileSync('C:/path/to/project/CAHOOTS.md', 'utf8');
-const openRfcs = (cahootsRaw.match(/### RFC-\d+/g) || []).length;
-const escalations = (cahootsRaw.match(/\[ESCALATED/g) || []).length;
-const dissents = (cahootsRaw.match(/Position:\s*dissent/gi) || []).length;
-dv.paragraph(`**Cahoots Deliberations:** ${openRfcs} RFCs · ${dissents} Dissents · ${escalations} Escalated`);
-```
-
-### 4. MCP Clients (Claude Code, Cursor, Windsurf)
-Inspect state interactively by calling `cahoots_status` or `cahoots_read` at any time.
-
----
-
-## Brand Kit & Identity
-
-Cahoots includes an official open brand kit in [`brand/`](./brand):
-- **Mascot**: The three-agent huddle vector ([`brand/mascot.svg`](./brand/mascot.svg)).
-- **Palette Tokens**: Canonical CSS variables in [`brand/tokens.css`](./brand/tokens.css) — ink (`#1F1A17`), tomato (`#F0502D`), stamp red (`#D63A18`), sun (`#FFC83D`), teal (`#1FA59A`), and paper (`#FFF4DD`).
-- **Interactive Storyboards**: Live typography and animation demos in [`brand/brand-board.html`](./brand/brand-board.html) and [`brand/wordmark-reveal.html`](./brand/wordmark-reveal.html).
-- **CLI Banner**: Dependency-free ANSI half-block reveal banner wired into `npx cahoots-mcp init`.
-
----
-
 ## License
 
-MIT © [XD Labs](https://github.com/xdlabs-io)
+MIT © [Bennett Moore](https://www.xdlabs.io)
