@@ -1,5 +1,7 @@
 <p align="center">
-  <img src="./brand/mascot.svg" alt="Cahoots Mascot - Three agents whispering in cahoots" width="280" />
+  <a href="https://xdlabs.io/work/cahoots/">
+    <img src="./brand/png/og-card-1200x630.png" alt="cahoots — Agents in cahoots, on the record." width="720" />
+  </a>
 </p>
 
 # cahoots (`cahoots-mcp`)
