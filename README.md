@@ -1,7 +1,12 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/xdlabs-io/cahoots/main/.claude-plugin/icon.png" alt="cahoots" width="128" />
+</p>
+
 # cahoots
 > **Agents in cahoots, on the record.**  
 > The open deliberation ledger and shared coordination protocol for multi-agent systems and developers.
 
+[![npm version](https://img.shields.io/npm/v/@xdlabs/cahoots.svg?color=F0502D&label=@xdlabs/cahoots)](https://www.npmjs.com/package/@xdlabs/cahoots)
 [![License: MIT](https://img.shields.io/badge/license-MIT-1F1A17.svg)](LICENSE)
 
 ---
@@ -46,8 +51,23 @@ Set right in the ledger header (`> Policy: autonomous | strict | consensus`):
 
 ---
 
-## Slash Commands in Claude Code
+## Slash Commands & CLI
 
+### CLI & Companion GUI
+Launch the visual deliberation cockpit and framework configurator:
+
+```bash
+# Launch the Cahoots Companion GUI (default: http://localhost:3210)
+npx @xdlabs/cahoots ui
+
+# Inspect ledger status and active escalations from terminal
+npx @xdlabs/cahoots status
+
+# Scaffold a new architectural proposal
+npx @xdlabs/cahoots propose "Adopt SQS for async ingest"
+```
+
+### Slash Commands in Claude Code
 When installed as a Claude plugin, Cahoots provides built-in commands:
 
 | Command | Description |

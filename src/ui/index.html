@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>cahoots — companion interface</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Fredoka:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --c-ink: #1F1A17;
+      --c-tomato: #F0502D;
+      --c-sun: #FFC83D;
+      --c-teal: #1FA59A;
+      --c-paper: #FDFCF9;
+      --c-surface: #FFFFFF;
+      --c-subtle: #F4EFEA;
+      --c-border: #E8E2DA;
+      --c-muted: #736961;
+      --font-display: 'Fredoka', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-wordmark: 'Bagel Fat One', cursive;
+      --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+    }
+
+    body {
+      background-color: var(--c-paper);
+      color: var(--c-ink);
+      font-family: var(--font-display);
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .wordmark {
+      font-family: var(--font-wordmark);
+      text-shadow: 0.04em 0.04em 0 var(--c-sun);
+    }
+
+    .font-mono-code {
+      font-family: var(--font-mono);
+    }
+
+    .refresh-spin {
+      transform: rotate(360deg);
+      transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .c-card {
+      background-color: var(--c-surface);
+      border: 1.5px solid var(--c-border);
+      border-radius: 16px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .c-card:hover {
+      border-color: #D6CEC4;
+      box-shadow: 0 4px 18px -4px rgba(31, 26, 23, 0.05);
+    }
+
+    .seg-btn {
+      transition: all 0.18s ease;
+    }
+    .seg-btn.active {
+      background-color: var(--c-surface);
+      color: var(--c-ink);
+      font-weight: 600;
+      box-shadow: 0 2px 8px -2px rgba(31, 26, 23, 0.08);
+      border-color: var(--c-border);
+    }
+
+    @keyframes stamp-pop {
+      0% { opacity: 0; transform: scale(1.3) rotate(-6deg); }
+      70% { opacity: 1; transform: scale(0.96) rotate(1deg); }
+      100% { opacity: 1; transform: scale(1) rotate(0deg); }
+    }
+    .stamp-animated {
+      animation: stamp-pop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--c-border); border-radius: 999px; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- =====================================================================
+       TOP NAVIGATION BAR
+       - Light, airy, fun, professional
+       - Logo with 1-tap AI chat trigger
+       - Segmented view navigation
+       - Universal SVG circular refresh control (0-layout shift, spin state)
+       ===================================================================== -->
+  <header class="sticky top-0 z-40 bg-[var(--c-surface)]/95 backdrop-blur-md border-b border-[var(--c-border)] px-6 py-3.5 flex items-center justify-between shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+    <!-- Brand & Ledger indicator with 1-tap logo trigger for AI Chat -->
+    <div class="flex items-center gap-3.5">
+      <button onclick="toggleChat()" title="Click logo to open Cahoots Copilot" class="focus:outline-none hover:opacity-90 transition-opacity">
+        <svg class="w-8 h-8 shrink-0" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="44" cy="56" r="30" fill="#F0502D" stroke="#1F1A17" stroke-width="5"/>
+          <circle cx="76" cy="46" r="28" fill="#FFC83D" stroke="#1F1A17" stroke-width="5"/>
+          <circle cx="94" cy="68" r="22" fill="#1FA59A" stroke="#1F1A17" stroke-width="5"/>
+          <circle cx="36" cy="52" r="3" fill="#1F1A17"/>
+          <circle cx="50" cy="52" r="3" fill="#1F1A17"/>
+          <path d="M37 63 Q44 70 51 63" stroke="#1F1A17" stroke-width="3" stroke-linecap="round" fill="none"/>
+          <circle cx="70" cy="42" r="3" fill="#1F1A17"/>
+          <circle cx="82" cy="42" r="3" fill="#1F1A17"/>
+          <path d="M72 52 Q77 56 82 52" stroke="#1F1A17" stroke-width="3" stroke-linecap="round" fill="none"/>
+        </svg>
+      </button>
+
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="wordmark text-2xl tracking-normal leading-none text-[var(--c-ink)]">cahoots</span>
+          <span class="font-mono-code text-[10px] px-1.5 py-0.5 rounded-md bg-[var(--c-subtle)] border border-[var(--c-border)] font-semibold text-[var(--c-muted)] uppercase tracking-wider">companion</span>
+        </div>
+        <div class="flex items-center gap-1.5 mt-0.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span id="syncStatus" class="font-mono-code text-xs text-[var(--c-muted)]">Connecting to local ledger...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Segmented Navigation Controls -->
+    <nav class="flex items-center p-1 bg-[var(--c-subtle)] border border-[var(--c-border)] rounded-xl">
+      <button onclick="switchTab('config')" id="tab-config" class="seg-btn active px-4 py-1.5 rounded-lg text-sm flex items-center gap-2 border border-transparent">
+        <svg class="w-4 h-4 text-[var(--c-ink)]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75"/>
+        </svg>
+        <span>Framework & Roster</span>
+      </button>
+
+      <button onclick="switchTab('stream')" id="tab-stream" class="seg-btn px-4 py-1.5 rounded-lg text-sm text-[var(--c-muted)] flex items-center gap-2 border border-transparent">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z"/>
+        </svg>
+        <span>Deliberation Stream</span>
+      </button>
+
+      <button onclick="switchTab('gavel')" id="tab-gavel" class="seg-btn px-4 py-1.5 rounded-lg text-sm text-[var(--c-muted)] flex items-center gap-2 border border-transparent relative">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-1.5 1.5-7.5-7.5zm6 6 4.5 4.5-1.5 1.5-4.5-4.5zM3 21l6-6"/>
+        </svg>
+        <span>Human Gavel</span>
+        <span id="gavelBadge" class="hidden w-2 h-2 rounded-full bg-[var(--c-tomato)]"></span>
+      </button>
+    </nav>
+
+    <!-- Top Right Controls: Universal Refresh Button & Save -->
+    <div class="flex items-center gap-2.5">
+      <button onclick="triggerUniversalRefresh()" title="Sync with CAHOOTS.md on disk" class="relative group p-2 rounded-lg border border-[var(--c-border)] bg-[var(--c-surface)] hover:bg-[var(--c-subtle)] text-[var(--c-ink)] transition-colors focus:outline-none">
+        <svg id="refreshIcon" class="w-4 h-4 transition-transform duration-500 ease-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+          <path d="M3 3v5h5"/>
+          <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>
+          <path d="M16 21h5v-5"/>
+        </svg>
+      </button>
+
+      <button onclick="saveConfiguration()" class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-[var(--c-ink)] hover:bg-black text-[var(--c-surface)] text-sm font-medium transition-all shadow-sm">
+        <svg class="w-4 h-4 text-[var(--c-sun)]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/>
+        </svg>
+        <span>Save to Ledger</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- =====================================================================
+       MAIN VIEW CONTAINER
+       ===================================================================== -->
+  <main class="flex-1 max-w-6xl w-full mx-auto p-6 md:p-8 space-y-8">
+
+    <!-- VIEW 1: FRAMEWORK & ROSTER CONFIGURATOR -->
+    <section id="view-config" class="space-y-8">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-2 border-b border-[var(--c-border)]">
+        <div>
+          <h1 class="text-2xl font-bold tracking-tight text-[var(--c-ink)]">Framework & Coordination Roster</h1>
+          <p class="text-sm text-[var(--c-muted)] mt-1">Configure the coordination lifecycle and agent team topology. Replace standard RFCs with your custom process.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-mono-code text-[var(--c-muted)]">Active Framework:</span>
+          <span id="activeFrameworkBadge" class="text-xs font-mono-code px-2.5 py-1 rounded-full bg-[var(--c-sun)]/20 border border-[var(--c-sun)] text-[var(--c-ink)] font-semibold">RFC & ADR (Standard)</span>
+        </div>
+      </div>
+
+      <!-- PRESETS SELECTOR -->
+      <div>
+        <label class="block text-xs font-mono-code uppercase font-semibold text-[var(--c-muted)] tracking-wider mb-3">1. Select Coordination Framework</label>
+        <div id="presetsGrid" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- DYNAMIC PIPELINE VISUALIZER -->
+      <div class="c-card p-6 bg-[var(--c-surface)]">
+        <div class="flex items-center justify-between mb-4">
+          <label class="text-xs font-mono-code uppercase font-semibold text-[var(--c-muted)] tracking-wider">Active Coordination Pipeline Stages</label>
+          <span class="text-xs font-mono-code text-[var(--c-muted)]">Agents are strictly bounded to this sequence</span>
+        </div>
+        <div id="pipelineContainer" class="flex flex-wrap items-center gap-3">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- ROSTER TABLE -->
+      <div class="c-card p-6 bg-[var(--c-surface)] space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-[var(--c-border)]">
+          <div>
+            <h2 class="text-base font-bold text-[var(--c-ink)]">Agent Roster & Persona Mapping</h2>
+            <p class="text-xs text-[var(--c-muted)]">Map roles to foundation models and define accountable permissions.</p>
+          </div>
+          <button onclick="addRosterRole()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--c-border)] hover:bg-[var(--c-subtle)] text-xs font-semibold text-[var(--c-ink)] transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+            <span>Add Role</span>
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead>
+              <tr class="font-mono-code text-[11px] uppercase tracking-wider text-[var(--c-muted)] border-b border-[var(--c-border)]">
+                <th class="pb-2">Roster Handle</th>
+                <th class="pb-2">Assigned Agent / Model</th>
+                <th class="pb-2">Primary Responsibility</th>
+                <th class="pb-2">Deliberation Rights</th>
+                <th class="pb-2 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="rosterTableBody" class="divide-y divide-[var(--c-border)] font-medium">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- INVARIANTS MANAGER -->
+      <div class="c-card p-6 bg-[var(--c-surface)] space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-[var(--c-border)]">
+          <div>
+            <h2 class="text-base font-bold text-[var(--c-ink)]">System Invariants (Non-Negotiable Constraints)</h2>
+            <p class="text-xs text-[var(--c-muted)]">Rules that no agent may violate regardless of consensus. Violations trigger automatic escalations.</p>
+          </div>
+          <button onclick="addInvariant()" class="px-3 py-1.5 rounded-lg border border-[var(--c-border)] hover:bg-[var(--c-subtle)] text-xs font-semibold text-[var(--c-ink)] transition-colors">
+            + New Invariant
+          </button>
+        </div>
+        <div id="invariantsList" class="space-y-2">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: DELIBERATION STREAM -->
+    <section id="view-stream" class="hidden space-y-6">
+      <div class="flex items-center justify-between pb-2 border-b border-[var(--c-border)]">
+        <div>
+          <h1 class="text-2xl font-bold tracking-tight text-[var(--c-ink)]">Deliberation Stream</h1>
+          <p class="text-sm text-[var(--c-muted)] mt-1">Live visualization of active agent proposals, positions, and accountable tasks parsed directly from <code class="font-mono-code text-xs px-1.5 py-0.5 rounded bg-[var(--c-subtle)]">CAHOOTS.md</code>.</p>
+        </div>
+        <button onclick="openProposeModal()" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[var(--c-ink)] hover:bg-black text-[var(--c-surface)] text-xs font-semibold transition-colors">
+          <svg class="w-3.5 h-3.5 text-[var(--c-sun)]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+          <span>Draft Proposal</span>
+        </button>
+      </div>
+
+      <!-- Deliberations Container -->
+      <div id="deliberationsContainer" class="space-y-6">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <!-- Task Board & ADRs Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+        <!-- Tasks -->
+        <div class="c-card p-6 bg-[var(--c-surface)] space-y-4">
+          <div class="flex items-center justify-between pb-2 border-b border-[var(--c-border)]">
+            <span class="font-mono-code text-xs font-semibold uppercase tracking-wider text-[var(--c-muted)]">Task Board Handoffs</span>
+            <span id="taskCountBadge" class="text-xs font-mono-code text-[var(--c-muted)]">0 tasks</span>
+          </div>
+          <div id="tasksList" class="space-y-2.5">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- ADRs -->
+        <div class="c-card p-6 bg-[var(--c-surface)] space-y-4">
+          <div class="flex items-center justify-between pb-2 border-b border-[var(--c-border)]">
+            <span class="font-mono-code text-xs font-semibold uppercase tracking-wider text-[var(--c-muted)]">Decision Log (ADRs)</span>
+            <span id="adrCountBadge" class="text-xs font-mono-code text-[var(--c-muted)]">0 records</span>
+          </div>
+          <div id="adrsList" class="space-y-2.5">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 3: THE HUMAN GAVEL -->
+    <section id="view-gavel" class="hidden space-y-6">
+      <div class="flex items-center justify-between pb-2 border-b border-[var(--c-border)]">
+        <div>
+          <h1 class="text-2xl font-bold tracking-tight text-[var(--c-ink)]">The Human Gavel</h1>
+          <p class="text-sm text-[var(--c-muted)] mt-1">Autonomous consensus halted. Break deadlocks with binding 1-click rulings injected straight into <code class="font-mono-code text-xs px-1.5 py-0.5 rounded bg-[var(--c-subtle)]">CAHOOTS.md</code>.</p>
+        </div>
+      </div>
+
+      <div id="gavelContainer" class="space-y-6">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =====================================================================
+       NON-BLOCKING FLOATING AI CHAT TRIGGER (Per user rules)
+       - No modal lock; floating auxiliary pill
+       ===================================================================== -->
+  <div class="fixed bottom-6 right-6 z-50">
+    <div id="chatDrawer" class="hidden w-80 c-card p-4 bg-[var(--c-surface)] shadow-2xl mb-3 space-y-3 border-2 border-[var(--c-ink)]">
+      <div class="flex items-center justify-between pb-2 border-b border-[var(--c-border)]">
+        <div class="flex items-center gap-2">
+          <svg class="w-4 h-4 text-[var(--c-tomato)]" viewBox="0 0 120 120" fill="currentColor">
+            <circle cx="60" cy="60" r="50"/>
+          </svg>
+          <span class="font-bold text-xs text-[var(--c-ink)]">Cahoots Copilot</span>
+        </div>
+        <button onclick="toggleChat()" class="text-xs font-mono-code text-[var(--c-muted)] hover:text-[var(--c-ink)]">✕</button>
+      </div>
+      <p class="text-xs text-[var(--c-muted)] leading-relaxed">Ask anything about open deliberations, agent stances, or generate custom framework schemas.</p>
+      <div class="flex gap-2">
+        <input id="copilotInput" type="text" placeholder="Draft proposal for async queue..." class="w-full text-xs font-mono-code px-3 py-1.5 rounded-lg border border-[var(--c-border)] bg-[var(--c-subtle)] focus:outline-none">
+        <button onclick="sendCopilotPrompt()" class="px-2.5 py-1.5 rounded-lg bg-[var(--c-ink)] text-white text-xs font-bold">→</button>
+      </div>
+      <div id="copilotFeedback" class="hidden text-xs font-mono-code p-2 rounded bg-amber-50 text-amber-800 border border-amber-200"></div>
+    </div>
+
+    <button onclick="toggleChat()" class="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-[var(--c-surface)] border-2 border-[var(--c-ink)] shadow-lg hover:shadow-xl transition-all">
+      <span class="w-2 h-2 rounded-full bg-[var(--c-tomato)] animate-ping"></span>
+      <span class="text-xs font-bold text-[var(--c-ink)] font-mono-code">Cahoots Copilot</span>
+    </button>
+  </div>
+
+  <!-- JAVASCRIPT STATE ENGINE & REST API BRIDGE -->
+  <script>
+    let state = {
+      ledger: null,
+      config: null,
+      presets: {},
+      user: { name: 'Lead Developer', handle: '@human' },
+      activeTab: 'config',
+      selectedGavelOptions: {}
+    };
+
+    // Initialize & Fetch from local server
+    async function loadData() {
+      try {
+        const res = await fetch('/api/status');
+        if (!res.ok) throw new Error('Could not fetch status');
+        const data = await res.json();
+        state.ledger = data.ledger;
+        state.config = data.config;
+        state.presets = data.presets || {};
+        state.user = data.user || { name: 'Lead Developer', handle: '@human' };
+
+        document.getElementById('syncStatus').innerText = `CAHOOTS.md linked · Policy: ${state.ledger.policy || 'autonomous'}`;
+
+        renderPresets();
+        renderPipeline();
+        renderRoster();
+        renderInvariants();
+        renderDeliberations();
+        renderTasksAndAdrs();
+        renderGavel();
+      } catch (err) {
+        document.getElementById('syncStatus').innerText = 'Ledger status: offline or unlinked';
+        console.error(err);
+      }
+    }
+
+    // Connect Server-Sent Events (SSE) for live disk updates
+    function connectSSE() {
+      const evtSource = new EventSource('/api/events');
+      evtSource.onmessage = (e) => {
+        try {
+          const payload = JSON.parse(e.data);
+          if (payload.type === 'sync' && payload.ledger) {
+            state.ledger = payload.ledger;
+            renderDeliberations();
+            renderTasksAndAdrs();
+            renderGavel();
+            document.getElementById('syncStatus').innerText = `CAHOOTS.md synced via live disk watcher`;
+          }
+        } catch {}
+      };
+    }
+
+    function switchTab(tab) {
+      state.activeTab = tab;
+      document.getElementById('view-config').classList.add('hidden');
+      document.getElementById('view-stream').classList.add('hidden');
+      document.getElementById('view-gavel').classList.add('hidden');
+
+      document.getElementById('tab-config').classList.remove('active', 'text-[var(--c-ink)]');
+      document.getElementById('tab-stream').classList.remove('active', 'text-[var(--c-ink)]');
+      document.getElementById('tab-gavel').classList.remove('active', 'text-[var(--c-ink)]');
+
+      document.getElementById('tab-config').classList.add('text-[var(--c-muted)]');
+      document.getElementById('tab-stream').classList.add('text-[var(--c-muted)]');
+      document.getElementById('tab-gavel').classList.add('text-[var(--c-muted)]');
+
+      document.getElementById(`view-${tab}`).classList.remove('hidden');
+      const activeBtn = document.getElementById(`tab-${tab}`);
+      activeBtn.classList.add('active', 'text-[var(--c-ink)]');
+      activeBtn.classList.remove('text-[var(--c-muted)]');
+    }
+
+    function renderPresets() {
+      const grid = document.getElementById('presetsGrid');
+      grid.innerHTML = '';
+      const activeFw = state.config.framework || 'rfc';
+
+      for (const [key, preset] of Object.entries(state.presets)) {
+        const isSelected = activeFw === key;
+        const card = document.createElement('div');
+        card.className = `c-card p-5 cursor-pointer flex flex-col justify-between ${isSelected ? 'border-2 border-[var(--c-ink)] bg-[var(--c-surface)]' : 'border border-[var(--c-border)] bg-[var(--c-surface)]'}`;
+        card.onclick = () => selectPreset(key);
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="font-mono-code text-xs px-2 py-0.5 rounded ${isSelected ? 'bg-[var(--c-ink)] text-white' : 'bg-[var(--c-subtle)] text-[var(--c-muted)]'} font-medium">${preset.tag}</span>
+              ${isSelected ? '<span class="w-2.5 h-2.5 rounded-full bg-[var(--c-teal)]"></span>' : ''}
+            </div>
+            <h3 class="font-bold text-base text-[var(--c-ink)]">${preset.name}</h3>
+            <p class="text-xs text-[var(--c-muted)] mt-1.5 leading-relaxed">${preset.description}</p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-[var(--c-border)] flex items-center justify-between text-[11px] font-mono-code text-[var(--c-muted)]">
+            <span>${preset.stages.length} Stages</span>
+            <span class="${isSelected ? 'text-[var(--c-teal)] font-bold' : ''}">${isSelected ? 'Active' : 'Click to select'}</span>
+          </div>
+        `;
+        grid.appendChild(card);
+      }
+
+      // Custom option
+      const isCustom = activeFw === 'custom';
+      const customCard = document.createElement('div');
+      customCard.className = `c-card p-5 cursor-pointer border border-dashed border-[var(--c-border)] bg-[var(--c-subtle)]/50 flex flex-col justify-between hover:border-[var(--c-ink)] ${isCustom ? 'border-2 border-[var(--c-ink)]' : ''}`;
+      customCard.onclick = () => selectPreset('custom');
+      customCard.innerHTML = `
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-mono-code text-xs px-2 py-0.5 rounded bg-[var(--c-sun)]/30 text-[var(--c-ink)] font-semibold">Custom</span>
+          </div>
+          <h3 class="font-bold text-base text-[var(--c-ink)]">Custom Process</h3>
+          <p class="text-xs text-[var(--c-muted)] mt-1.5 leading-relaxed">Build your own bespoke coordination pipeline and custom governance primitives.</p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-[var(--c-border)] flex items-center justify-between text-[11px] font-mono-code text-[var(--c-muted)]">
+          <span>Dynamic</span>
+          <span class="text-[var(--c-tomato)] font-medium">Bespoke</span>
+        </div>
+      `;
+      grid.appendChild(customCard);
+    }
+
+    function selectPreset(key) {
+      state.config.framework = key;
+      if (state.presets[key]) {
+        state.config.frameworkName = state.presets[key].name;
+        state.config.stages = [...state.presets[key].stages];
+      } else if (key === 'custom') {
+        state.config.frameworkName = 'Custom Process';
+        if (!state.config.stages || state.config.stages.length === 0) {
+          state.config.stages = [
+            { id: 'step1', name: 'STAGE 1: SPEC', type: 'pitch' },
+            { id: 'step2', name: 'STAGE 2: REVIEW', type: 'review' },
+            { id: 'step3', name: 'STAGE 3: VERIFY', type: 'record' }
+          ];
+        }
+      }
+      document.getElementById('activeFrameworkBadge').innerText = state.config.frameworkName;
+      renderPresets();
+      renderPipeline();
+    }
+
+    function renderPipeline() {
+      const container = document.getElementById('pipelineContainer');
+      container.innerHTML = '';
+      const stages = state.config.stages || [];
+
+      stages.forEach((stage, idx) => {
+        const item = document.createElement('div');
+        item.className = 'flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[var(--c-subtle)] border border-[var(--c-border)]';
+        item.innerHTML = `
+          <span class="w-5 h-5 rounded-full bg-[var(--c-ink)] text-white flex items-center justify-center text-[10px] font-mono-code font-bold">${idx + 1}</span>
+          <span class="text-sm font-semibold text-[var(--c-ink)]">${stage.name}</span>
+        `;
+        container.appendChild(item);
+
+        if (idx < stages.length - 1) {
+          const arrow = document.createElement('span');
+          arrow.className = 'text-xs font-mono-code text-[var(--c-muted)]';
+          arrow.innerText = '→';
+          container.appendChild(arrow);
+        }
+      });
+
+      if (state.config.framework === 'custom') {
+        const addBtn = document.createElement('button');
+        addBtn.className = 'flex items-center gap-1.5 px-3 py-2 rounded-xl border border-dashed border-[var(--c-ink)] bg-[var(--c-sun)]/10 text-xs font-mono-code font-bold text-[var(--c-ink)] hover:bg-[var(--c-sun)]/20';
+        addBtn.innerText = '+ Add Stage';
+        addBtn.onclick = () => {
+          const name = prompt('Enter new stage name:');
+          if (name) {
+            state.config.stages.push({ id: `stage_${Date.now()}`, name: name.toUpperCase(), type: 'custom' });
+            renderPipeline();
+          }
+        };
+        container.appendChild(addBtn);
+      }
+    }
+
+    function renderRoster() {
+      const tbody = document.getElementById('rosterTableBody');
+      tbody.innerHTML = '';
+      const roster = state.config.roster || (state.ledger ? state.ledger.roster : []);
+
+      roster.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-[var(--c-subtle)]/40 transition-colors';
+        const isHuman = r.handle === '@human';
+        const displayName = isHuman ? `${state.user.name} (Lead Developer)` : r.model;
+
+        tr.innerHTML = `
+          <td class="py-3 font-mono-code font-bold text-[var(--c-ink)]">${r.handle}</td>
+          <td class="py-3">
+            ${isHuman ? `<span class="px-2.5 py-1 rounded-md text-xs font-mono-code bg-[var(--c-sun)]/20 text-[var(--c-ink)] font-semibold border border-[var(--c-sun)]">${displayName}</span>` : `
+              <select onchange="updateRosterModel('${r.handle}', this.value)" class="px-2.5 py-1 rounded-md text-xs font-mono-code bg-[var(--c-subtle)] border border-[var(--c-border)] text-[var(--c-ink)]">
+                <option value="Claude 3.7 Sonnet" ${r.model.includes('Claude') ? 'selected' : ''}>Claude 3.7 Sonnet (Anthropic)</option>
+                <option value="Gemini 2.5 Pro" ${r.model.includes('Gemini') ? 'selected' : ''}>Gemini 2.5 Pro (Google)</option>
+                <option value="OpenAI o3-mini" ${r.model.includes('o3') || r.model.includes('Codex') ? 'selected' : ''}>OpenAI o3-mini / Codex</option>
+              </select>
+            `}
+          </td>
+          <td class="py-3 text-xs text-[var(--c-muted)]">${r.role || 'Deliberation contributor'}</td>
+          <td class="py-3">
+            <span class="inline-block px-2 py-0.5 rounded text-[11px] font-mono-code ${isHuman ? 'bg-[var(--c-sun)]/30 text-[var(--c-ink)] font-bold border border-[var(--c-sun)]' : 'bg-[var(--c-teal)]/10 text-[var(--c-teal)] font-semibold border border-[var(--c-teal)]/20'}">
+              ${isHuman ? 'Binding Tie-Breaker' : 'Peer Stance & Votes'}
+            </span>
+          </td>
+          <td class="py-3 text-right">
+            ${isHuman ? '<span class="text-xs font-mono-code text-[var(--c-muted)]">Permanent</span>' : `<button onclick="removeRosterRole('${r.handle}')" class="text-xs font-mono-code text-[var(--c-muted)] hover:text-[var(--c-tomato)]">Remove</button>`}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function updateRosterModel(handle, newModel) {
+      const role = state.config.roster.find(r => r.handle === handle);
+      if (role) role.model = newModel;
+    }
+
+    function removeRosterRole(handle) {
+      state.config.roster = state.config.roster.filter(r => r.handle !== handle);
+      renderRoster();
+    }
+
+    function addRosterRole() {
+      const handle = prompt('Enter agent handle (e.g. @tester or @security):');
+      if (handle) {
+        const formatted = handle.startsWith('@') ? handle : `@${handle}`;
+        state.config.roster.push({
+          handle: formatted,
+          model: 'Claude 3.7 Sonnet',
+          role: 'Domain specialist contributor',
+          canVote: true
+        });
+        renderRoster();
+      }
+    }
+
+    function renderInvariants() {
+      const list = document.getElementById('invariantsList');
+      list.innerHTML = '';
+      const invariants = state.config.invariants || (state.ledger ? state.ledger.invariants : []);
+
+      invariants.forEach((inv, idx) => {
+        const item = document.createElement('div');
+        item.className = 'flex items-center justify-between p-3 rounded-xl bg-[var(--c-subtle)] border border-[var(--c-border)]';
+        item.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span class="text-xs font-mono-code text-[var(--c-ink)]">${inv}</span>
+          </div>
+          <button onclick="removeInvariant(${idx})" class="text-xs font-mono-code text-[var(--c-muted)] hover:text-[var(--c-tomato)]">Remove</button>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    function addInvariant() {
+      const text = prompt('Enter new non-negotiable architectural invariant:');
+      if (text) {
+        if (!state.config.invariants) state.config.invariants = [];
+        state.config.invariants.push(text);
+        renderInvariants();
+      }
+    }
+
+    function removeInvariant(idx) {
+      state.config.invariants.splice(idx, 1);
+      renderInvariants();
+    }
+
+    function renderDeliberations() {
+      const container = document.getElementById('deliberationsContainer');
+      container.innerHTML = '';
+      const deliberations = state.ledger ? state.ledger.deliberations : [];
+
+      if (deliberations.length === 0) {
+        container.innerHTML = `
+          <div class="c-card p-8 text-center text-sm text-[var(--c-muted)] bg-[var(--c-surface)]">
+            No active deliberations currently logged in CAHOOTS.md. Click "Draft Proposal" to start one.
+          </div>
+        `;
+        return;
+      }
+
+      deliberations.forEach(delib => {
+        const card = document.createElement('div');
+        card.className = 'c-card p-6 bg-[var(--c-surface)] space-y-4';
+        const isEscalated = delib.status && delib.status.toLowerCase().includes('escalat');
+
+        let stancesHtml = '';
+        if (delib.positions && delib.positions.length > 0) {
+          stancesHtml = delib.positions.map(p => {
+            const isAgree = p.position === 'agree';
+            return `
+              <div class="p-3.5 rounded-xl border border-[var(--c-border)] bg-[var(--c-surface)] space-y-1">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full ${isAgree ? 'bg-[var(--c-teal)]' : 'bg-[var(--c-tomato)]'}"></span>
+                    <span class="font-mono-code text-xs font-bold text-[var(--c-ink)]">${p.author}</span>
+                  </div>
+                  <span class="text-xs font-mono-code font-bold ${isAgree ? 'text-[var(--c-teal)] bg-[var(--c-teal)]/10' : 'text-[var(--c-tomato)] bg-[var(--c-tomato)]/10'} px-2 py-0.5 rounded border border-current">${p.position.toUpperCase()}</span>
+                </div>
+                <p class="text-xs text-[var(--c-muted)] pl-4">${p.rationale || 'No rationale stated'}</p>
+              </div>
+            `;
+          }).join('');
+        } else {
+          stancesHtml = '<div class="text-xs text-[var(--c-muted)]">Awaiting peer agent stances...</div>';
+        }
+
+        card.innerHTML = `
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-[var(--c-border)]">
+            <div class="space-y-1">
+              <div class="flex items-center gap-2.5">
+                <span class="font-mono-code text-xs px-2.5 py-0.5 rounded-full ${isEscalated ? 'bg-[var(--c-tomato)]/10 text-[var(--c-tomato)] font-bold border border-[var(--c-tomato)]/30' : 'bg-emerald-50 text-emerald-800 font-semibold border border-emerald-200'}">
+                  ${delib.status}
+                </span>
+                <span class="font-mono-code text-xs text-[var(--c-muted)]">${delib.id}</span>
+                <span class="text-xs text-[var(--c-muted)]">· by <strong class="text-[var(--c-ink)] font-mono-code">${delib.author}</strong></span>
+              </div>
+              <h2 class="text-base font-bold text-[var(--c-ink)]">${delib.title}</h2>
+            </div>
+            ${isEscalated ? `
+              <button onclick="switchTab('gavel')" class="px-3 py-1.5 rounded-lg bg-[var(--c-tomato)] hover:bg-[#c93313] text-white text-xs font-semibold flex items-center gap-1.5 transition-colors self-start md:self-auto">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-1.5 1.5-7.5-7.5zm6 6 4.5 4.5-1.5 1.5-4.5-4.5zM3 21l6-6"/></svg>
+                <span>Resolve in Gavel</span>
+              </button>
+            ` : ''}
+          </div>
+          <div class="p-3.5 rounded-xl bg-[var(--c-subtle)] border border-[var(--c-border)] text-xs text-[var(--c-ink)] leading-relaxed">
+            ${delib.summary || 'No summary specified.'}
+          </div>
+          <div class="space-y-2">
+            <div class="font-mono-code text-xs font-semibold uppercase tracking-wider text-[var(--c-muted)]">Peer Stances</div>
+            ${stancesHtml}
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderTasksAndAdrs() {
+      const tasksList = document.getElementById('tasksList');
+      const adrsList = document.getElementById('adrsList');
+      const tasks = state.ledger ? state.ledger.tasks : [];
+      const adrs = state.ledger ? state.ledger.adrs : [];
+
+      document.getElementById('taskCountBadge').innerText = `${tasks.length} tasks`;
+      document.getElementById('adrCountBadge').innerText = `${adrs.length} records`;
+
+      tasksList.innerHTML = tasks.length ? tasks.map(t => `
+        <div class="p-3 rounded-xl border border-[var(--c-border)] bg-[var(--c-subtle)]/40 space-y-1 ${t.completed ? 'opacity-60' : ''}">
+          <div class="flex items-center justify-between text-xs font-mono-code">
+            <span class="font-bold text-[var(--c-ink)] ${t.completed ? 'line-through' : ''}">${t.id}</span>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded ${t.completed ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">${t.status}</span>
+          </div>
+          <div class="text-xs text-[var(--c-ink)] ${t.completed ? 'line-through' : 'font-medium'}">${t.task || 'Task description'}</div>
+          <div class="text-[11px] text-[var(--c-muted)] font-mono-code">Assignee: ${t.assignee}</div>
+        </div>
+      `).join('') : '<div class="text-xs text-[var(--c-muted)]">No pending tasks.</div>';
+
+      adrsList.innerHTML = adrs.length ? adrs.map(a => `
+        <div class="p-3 rounded-xl border border-[var(--c-border)] bg-[var(--c-surface)] space-y-1">
+          <div class="flex items-center justify-between text-xs font-mono-code font-bold text-[var(--c-ink)]">
+            <span>${a.id}</span>
+            <span class="text-[11px] font-normal text-[var(--c-muted)]">${a.date}</span>
+          </div>
+          <p class="text-xs text-[var(--c-muted)]">${a.summary}</p>
+        </div>
+      `).join('') : '<div class="text-xs text-[var(--c-muted)]">No recorded ADRs yet.</div>';
+    }
+
+    function renderGavel() {
+      const container = document.getElementById('gavelContainer');
+      container.innerHTML = '';
+      const badge = document.getElementById('gavelBadge');
+      const deliberations = state.ledger ? state.ledger.deliberations : [];
+      const escalated = deliberations.filter(d => d.status && d.status.toLowerCase().includes('escalat'));
+
+      if (escalated.length > 0) {
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+
+      if (escalated.length === 0) {
+        container.innerHTML = `
+          <div class="c-card p-12 text-center bg-[var(--c-surface)] space-y-3">
+            <div class="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 mx-auto flex items-center justify-center">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
+            </div>
+            <h3 class="font-bold text-base text-[var(--c-ink)]">Consensus Clear — No Escalations Pending</h3>
+            <p class="text-xs text-[var(--c-muted)] max-w-md mx-auto">Agents are operating autonomously according to policy. When an agent logs formal dissent or deadlocks, the Gavel will summon you here for tie-breaking.</p>
+          </div>
+        `;
+        return;
+      }
+
+      escalated.forEach(delib => {
+        const card = document.createElement('div');
+        card.className = 'c-card p-6 md:p-8 bg-[var(--c-surface)] space-y-6';
+
+        let optionsHtml = '';
+        if (delib.escalation && delib.escalation.options && delib.escalation.options.length > 0) {
+          optionsHtml = delib.escalation.options.map(opt => {
+            const isSelected = state.selectedGavelOptions[delib.id] === opt.key;
+            return `
+              <div onclick="selectOption('${delib.id}', '${opt.key}', '${escapeQuote(opt.label)}')" class="c-card p-4 cursor-pointer flex items-start justify-between gap-4 ${isSelected ? 'border-2 border-[var(--c-ink)] bg-[var(--c-surface)]' : 'border border-[var(--c-border)]'}">
+                <div class="flex items-center gap-2.5">
+                  <span class="w-5 h-5 rounded-full ${isSelected ? 'bg-[var(--c-ink)] text-white' : 'bg-[var(--c-subtle)] text-[var(--c-ink)] border border-[var(--c-border)]'} flex items-center justify-center font-mono-code text-xs font-bold">${opt.key}</span>
+                  <span class="font-bold text-sm text-[var(--c-ink)]">${opt.label}</span>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+
+        card.innerHTML = `
+          <div class="p-4 rounded-xl bg-[var(--c-subtle)] border border-[var(--c-border)] flex items-start gap-4">
+            <div class="p-2.5 rounded-xl bg-[var(--c-tomato)] text-white shrink-0 mt-0.5">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-1.5 1.5-7.5-7.5zm6 6 4.5 4.5-1.5 1.5-4.5-4.5zM3 21l6-6"/></svg>
+            </div>
+            <div class="space-y-1">
+              <h3 class="font-bold text-base text-[var(--c-ink)]">Escalation on ${delib.id}: ${delib.title}</h3>
+              <p class="text-xs text-[var(--c-muted)] leading-relaxed">
+                ${delib.escalation ? delib.escalation.reason : delib.summary}
+              </p>
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <label class="block text-xs font-mono-code uppercase font-semibold text-[var(--c-muted)] tracking-wider">Select Ruling or Type Custom Ruling</label>
+            ${optionsHtml}
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-xs font-mono-code uppercase font-semibold text-[var(--c-muted)] tracking-wider">Custom Binding Directive</label>
+            <input id="customRuling_${delib.id}" type="text" placeholder="e.g. Approved with condition that timeouts are strictly bounded." class="w-full px-4 py-2.5 rounded-xl border border-[var(--c-border)] bg-[var(--c-subtle)]/40 text-xs font-mono-code focus:outline-none focus:border-[var(--c-ink)]">
+          </div>
+
+          <div class="flex items-center justify-between pt-4 border-t border-[var(--c-border)]">
+            <span class="text-xs font-mono-code text-[var(--c-muted)]">Signing ruling as <strong class="text-[var(--c-ink)]">${state.user.name}</strong></span>
+            <button onclick="commitRuling('${delib.id}')" class="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[var(--c-ink)] hover:bg-black text-[var(--c-surface)] text-sm font-semibold transition-all shadow-md">
+              <svg class="w-4 h-4 text-[var(--c-sun)]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-1.5 1.5-7.5-7.5zm6 6 4.5 4.5-1.5 1.5-4.5-4.5zM3 21l6-6"/></svg>
+              <span>Record Human Ruling</span>
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function escapeQuote(str) {
+      return (str || '').replace(/'/g, "\\'");
+    }
+
+    function selectOption(rfcId, key, label) {
+      state.selectedGavelOptions[rfcId] = key;
+      const input = document.getElementById(`customRuling_${rfcId}`);
+      if (input) input.value = `Approved Option ${key}: ${label}`;
+      renderGavel();
+    }
+
+    async function commitRuling(rfcId) {
+      const input = document.getElementById(`customRuling_${rfcId}`);
+      const text = input ? input.value : '';
+      if (!text.trim()) {
+        alert('Please select an option or type a ruling directive.');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/ruling', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            rfcId,
+            rulingText: text,
+            author: '@human'
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          state.ledger = data.ledger;
+          renderDeliberations();
+          renderTasksAndAdrs();
+          renderGavel();
+          alert(`Ruling recorded for ${rfcId}. CAHOOTS.md updated atomically.`);
+        } else {
+          alert('Error: ' + data.error);
+        }
+      } catch (err) {
+        alert('Failed to save ruling: ' + err.message);
+      }
+    }
+
+    async function saveConfiguration() {
+      try {
+        const res = await fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            config: state.config,
+            syncLedger: true
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('Saved configuration to .cahoots/cahoots.config.json and synchronized CAHOOTS.md');
+        } else {
+          alert('Error saving config: ' + data.error);
+        }
+      } catch (err) {
+        alert('Network error saving config: ' + err.message);
+      }
+    }
+
+    function triggerUniversalRefresh() {
+      const icon = document.getElementById('refreshIcon');
+      icon.classList.add('refresh-spin');
+      const status = document.getElementById('syncStatus');
+      const originalText = status.innerText;
+      status.innerText = 'Refreshing CAHOOTS.md...';
+
+      loadData().then(() => {
+        setTimeout(() => {
+          icon.classList.remove('refresh-spin');
+          status.innerText = 'CAHOOTS.md synced just now';
+          setTimeout(() => { status.innerText = originalText; }, 2000);
+        }, 500);
+      });
+    }
+
+    function toggleChat() {
+      const drawer = document.getElementById('chatDrawer');
+      drawer.classList.toggle('hidden');
+    }
+
+    function sendCopilotPrompt() {
+      const input = document.getElementById('copilotInput');
+      const feedback = document.getElementById('copilotFeedback');
+      if (input.value) {
+        feedback.innerText = `Copilot ready. Run /cahoots-propose or prompt your agent: "${input.value}"`;
+        feedback.classList.remove('hidden');
+        input.value = '';
+      }
+    }
+
+    function openProposeModal() {
+      const title = prompt('Enter proposal title:');
+      if (title) {
+        const summary = prompt('Brief summary of architectural change:');
+        fetch('/api/propose', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, summary, author: '@human' })
+        }).then(r => r.json()).then(data => {
+          if (data.success) {
+            state.ledger = data.ledger;
+            renderDeliberations();
+          }
+        });
+      }
+    }
+
+    // Startup
+    loadData();
+    connectSSE();
+  </script>
+</body>
+</html>

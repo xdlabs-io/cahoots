@@ -1,0 +1,50 @@
+{
+  "name": "@xdlabs/cahoots",
+  "version": "0.2.0",
+  "description": "Multi-agent deliberation ledger and companion GUI protocol for autonomous coordination and custom frameworks.",
+  "type": "module",
+  "main": "src/index.js",
+  "bin": {
+    "cahoots": "bin/cahoots.js",
+    "cahoots-mcp": "bin/cahoots.js"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "bin",
+    "src",
+    "commands",
+    "skills",
+    ".claude-plugin",
+    "CAHOOTS.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "start": "node bin/cahoots.js ui",
+    "ui": "node bin/cahoots.js ui",
+    "status": "node bin/cahoots.js status",
+    "test": "node --test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xdlabs-io/cahoots.git"
+  },
+  "keywords": [
+    "multi-agent",
+    "coordination",
+    "deliberation",
+    "ledger",
+    "rfc",
+    "adr",
+    "companion-ui",
+    "consensus",
+    "governance"
+  ],
+  "author": {
+    "name": "XD Labs",
+    "url": "https://www.xdlabs.io"
+  },
+  "license": "MIT"
+}
