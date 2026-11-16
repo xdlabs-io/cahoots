@@ -132,4 +132,4 @@ When installed as a Claude plugin, Cahoots provides built-in commands:
 
 ## License
 
-MIT © [Bennett Moore](https://www.xdlabs.io)
+MIT © [XD Labs](https://www.xdlabs.io)
