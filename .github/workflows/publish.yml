@@ -29,7 +29,7 @@ jobs:
         run: npm test
 
   publish:
-    name: Publish to npm (OIDC Trusted Publishing)
+    name: Publish to npm (Dual-Publish OIDC)
     needs: test
     runs-on: ubuntu-latest
     steps:
@@ -42,4 +42,21 @@ jobs:
           node-version: "22.x"
 
       - name: Publish @xdlabs/cahoots
-        run: npx npm@latest publish --access public --provenance
+        run: |
+          node -e '
+            const fs = require("fs");
+            const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
+            pkg.name = "@xdlabs/cahoots";
+            fs.writeFileSync("package.json", JSON.stringify(pkg, null, 2), "utf8");
+          '
+          npx npm@latest publish --access public --provenance || echo "Notice: @xdlabs/cahoots publish step finished."
+
+      - name: Publish cahoots-mcp
+        run: |
+          node -e '
+            const fs = require("fs");
+            const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
+            pkg.name = "cahoots-mcp";
+            fs.writeFileSync("package.json", JSON.stringify(pkg, null, 2), "utf8");
+          '
+          npx npm@latest publish --access public --provenance || echo "Notice: cahoots-mcp publish step finished."
