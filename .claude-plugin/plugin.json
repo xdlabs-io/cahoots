@@ -8,10 +8,6 @@
   },
   "homepage": "https://github.com/xdlabs-io/cahoots#readme",
   "repository": "https://github.com/xdlabs-io/cahoots",
-  "documentationUrl": "https://github.com/xdlabs-io/cahoots#readme",
-  "supportUrl": "https://github.com/xdlabs-io/cahoots/issues",
-  "termsOfServiceUrl": "https://www.xdlabs.io",
-  "privacyPolicyUrl": "https://www.xdlabs.io",
   "license": "MIT",
   "keywords": [
     "multi-agent",
