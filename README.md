@@ -2,24 +2,62 @@
   <img src="https://raw.githubusercontent.com/xdlabs-io/cahoots/main/.claude-plugin/icon.png" alt="cahoots" width="128" />
 </p>
 
-# cahoots
+# cahoots (`cahoots-mcp`)
 > **Agents in cahoots, on the record.**  
-> The open deliberation ledger and shared coordination protocol for multi-agent systems and developers.
+> The open deliberation ledger, Model Context Protocol (MCP) server, and shared coordination protocol for multi-agent systems.
 
-[![npm version](https://img.shields.io/npm/v/@xdlabs/cahoots.svg?color=F0502D&label=@xdlabs/cahoots)](https://www.npmjs.com/package/@xdlabs/cahoots)
+[![npm version (cahoots-mcp)](https://img.shields.io/npm/v/cahoots-mcp.svg?color=F0502D&label=cahoots-mcp)](https://www.npmjs.com/package/cahoots-mcp)
+[![npm version (@xdlabs/cahoots)](https://img.shields.io/npm/v/@xdlabs/cahoots.svg?color=1FA59A&label=@xdlabs/cahoots)](https://www.npmjs.com/package/@xdlabs/cahoots)
 [![License: MIT](https://img.shields.io/badge/license-MIT-1F1A17.svg)](LICENSE)
 
 ---
 
 ## What is Cahoots?
 
-When multiple autonomous agents (Claude Code, OpenAI Codex, Google Gemini, Cursor) work on the same codebase, they usually fail in one of two ways:
-1. **Context Loss & Amnesia**: Decisions made in one model session die the moment the turn ends.
+When multiple autonomous AI agents (Claude Code, OpenAI Codex, Google Gemini, Cursor, Windsurf) work on the same codebase, they usually fail in one of two ways:
+1. **Context Loss & Amnesia**: Decisions made in one model session die the moment the turn ends or context compacts.
 2. **Silent Disagreements & Rewrites**: Agent A writes an architecture; Agent B wipes it out 10 minutes later without explaining why.
 
 **Cahoots** fixes this by giving agents a structured, append-only markdown ledger: `CAHOOTS.md`.
 
 Instead of conversational fluff, agents post typed **STANCES**, log explicit **DISSENT**, escalate deadlocks to the developer with **ESCALATION**, assign accountable **TASKS**, and await **HUMAN RULINGS** when consensus cannot be reached autonomously.
+
+---
+
+## Model Context Protocol (MCP) Server
+
+Cahoots exposes a native **Model Context Protocol (MCP)** server (`cahoots-mcp`) so coding agents across Claude Code, Cursor, Windsurf, Antigravity, and Zed can interact with the ledger directly.
+
+### Quickstart (MCP Client Config)
+
+Add Cahoots to your `claude_desktop_config.json`, `.mcp.json`, or Cursor settings:
+
+```json
+{
+  "mcpServers": {
+    "cahoots": {
+      "command": "npx",
+      "args": ["-y", "cahoots-mcp", "serve"]
+    }
+  }
+}
+```
+
+### The 11 MCP Tools
+
+| Tool | Purpose |
+| :--- | :--- |
+| `cahoots_read` | Read active roster, invariants, open RFCs, peer stances, task board, and ADRs. |
+| `cahoots_diff` | Token-optimized Delta query. Returns only changes since a reference RFC, timestamp, or state hash. |
+| `cahoots_propose` | Submit an architectural proposal (creates `RFC-xxx`). |
+| `cahoots_stance` | Log an agent's typed position (`agree`, `dissent`, `alternate`) with failure modes. |
+| `cahoots_dissent` | Register explicit architectural dissent with required failure modes and counter-proposal. |
+| `cahoots_escalate` | Escalate an active RFC to the developer with a structured 2-option decision memo. |
+| `cahoots_ruling` | Record a binding human developer ruling, freezing debate into an ADR. |
+| `cahoots_task` | Create, update, or mark tasks completed with acceptance criteria. |
+| `cahoots_decision` | Manually record an Architecture Decision Record (ADR). |
+| `cahoots_status` | Telemetry pulse: count of open RFCs, active dissents, pending escalations, and completed tasks. |
+| `cahoots_init` | Scaffold a fresh `CAHOOTS.md` ledger in the repository. |
 
 ---
 
@@ -51,12 +89,14 @@ Set right in the ledger header (`> Policy: autonomous | strict | consensus`):
 
 ---
 
-## Slash Commands & CLI
+## CLI & Companion GUI
 
-### CLI & Companion GUI
 Launch the visual deliberation cockpit and framework configurator:
 
 ```bash
+# Initialize CAHOOTS.md in your project
+npx cahoots-mcp init
+
 # Launch the Cahoots Companion GUI (default: http://localhost:3210)
 npx @xdlabs/cahoots ui
 
@@ -67,8 +107,11 @@ npx @xdlabs/cahoots status
 npx @xdlabs/cahoots propose "Adopt SQS for async ingest"
 ```
 
-### Slash Commands in Claude Code
-When installed as a Claude plugin, Cahoots provides built-in commands:
+---
+
+## Claude Plugin & Slash Commands
+
+When installed as a Claude plugin, Cahoots provides built-in slash commands:
 
 | Command | Description |
 | :--- | :--- |

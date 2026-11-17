@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "cahoots": {
+      "command": "npx",
+      "args": ["-y", "cahoots-mcp", "serve"]
+    }
+  }
+}

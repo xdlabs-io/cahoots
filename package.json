@@ -1,0 +1,56 @@
+{
+  "name": "@xdlabs/cahoots",
+  "version": "0.2.1",
+  "description": "Multi-agent deliberation ledger, Model Context Protocol (MCP) server, and coordination protocol (CAHOOTS.md) for autonomous coding agents.",
+  "type": "module",
+  "main": "src/index.js",
+  "bin": {
+    "cahoots": "bin/cahoots.js",
+    "cahoots-mcp": "bin/cahoots.js"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "bin",
+    "src",
+    "commands",
+    "skills",
+    ".claude-plugin",
+    ".mcp.json",
+    "CAHOOTS.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "start": "node bin/cahoots.js ui",
+    "ui": "node bin/cahoots.js ui",
+    "status": "node bin/cahoots.js status",
+    "test": "node --test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xdlabs-io/cahoots.git"
+  },
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "multi-agent",
+    "coordination",
+    "deliberation",
+    "ledger",
+    "rfc",
+    "adr",
+    "companion-ui",
+    "consensus",
+    "governance",
+    "claude-code",
+    "cursor-ai"
+  ],
+  "author": {
+    "name": "XD Labs",
+    "url": "https://www.xdlabs.io"
+  },
+  "license": "MIT"
+}
